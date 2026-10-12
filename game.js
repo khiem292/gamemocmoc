@@ -113,13 +113,29 @@ function doll(avatar = state?.avatar, cl = '') {
   return `<span class="doll ${cl} ${a.hat ? '' : 'no-hat'}" style="--skin:${SKINS[a.skin] || SKINS[1]};--hair:${HAIRS[a.hair] || HAIRS[0]};--shirt:${SHIRTS[a.shirt] || SHIRTS[0]}"><span class="hair ${['short', 'long', 'spiky'].includes(a.hairStyle) ? a.hairStyle : 'short'}"></span><span class="head"><span class="eyes"><span>•</span><span>•</span></span></span><span class="body"></span><span class="legs"></span><span class="hat"></span></span>`;
 }
 function loginScreen() {
-  app.innerHTML = `<main class="auth-screen"><div class="auth-cloud"></div><div class="auth-cloud two"></div><div class="auth-scene"></div>
-    <section class="auth-card"><div class="logo-orb">🌿</div><h1 class="brand">Mộc Mộc Farm</h1><p class="tagline">🌼 Nơi những mầm xanh bắt đầu 🌼</p>
-    <div class="auth-tabs"><button data-action="auth-tab" data-mode="login" class="auth-tab ${accountMode === 'login' ? 'active' : ''}">Đăng nhập</button><button data-action="auth-tab" data-mode="register" class="auth-tab ${accountMode === 'register' ? 'active' : ''}">Tạo tài khoản</button></div>
-    <form id="auth-form"><div class="field"><label for="username">👩‍🌾 Tên người chơi</label><input id="username" name="username" autocomplete="username" maxlength="18" placeholder="Ví dụ: NongDanXanh" required></div>
-    <div class="field"><label for="pin">🔒 Mã PIN (4–8 chữ số)</label><input id="pin" name="pin" type="password" inputmode="numeric" autocomplete="${accountMode === 'register' ? 'new-password' : 'current-password'}" minlength="4" maxlength="8" pattern="[0-9]{4,8}" placeholder="Nhập mã PIN" required></div>
-    <p class="auth-error" id="auth-error"></p><button type="submit" class="btn btn-primary btn-block">${accountMode === 'register' ? '✨ Tạo nông trại mới' : '🌻 Vào nông trại'}</button></form>
-    <p class="auth-info">Bản chơi thử: tài khoản và nông trại chỉ lưu trên thiết bị này. Không dùng mật khẩu thật; không đồng bộ giữa các máy.</p></section><div class="auth-flowers">🌼 🌷 🌻 🌿</div></main>`;
+  app.innerHTML = `<main class="auth-screen pixel-auth-screen">
+    <div class="auth-pixel-horizon" aria-hidden="true"><span class="auth-pixel-sun"></span><span class="auth-pixel-cloud cloud-one"></span><span class="auth-pixel-cloud cloud-two"></span><span class="auth-pixel-mountain mountain-one"></span><span class="auth-pixel-mountain mountain-two"></span><span class="auth-pixel-barn">🏡</span><span class="auth-pixel-tree tree-one">🌳</span><span class="auth-pixel-tree tree-two">🌲</span><span class="auth-pixel-crops">🌱 🌻 🌾 🌿 🌱 🌾</span></div>
+    <section class="auth-card pixel-auth-card" aria-label="Đăng nhập Mộc Mộc Farm">
+      <div class="auth-pixel-ribbon">✦ MỘC MỘC VALLEY ✦</div>
+      <div class="logo-orb pixel-auth-logo">🌿</div>
+      <h1 class="brand pixel-auth-brand">Mộc Mộc Farm</h1>
+      <p class="tagline pixel-auth-subtitle">🌻 Nông trại nhỏ · Niềm vui lớn 🌻</p>
+      <div class="auth-tabs" role="group" aria-label="Chọn chế độ tài khoản"><button type="button" data-action="auth-tab" data-mode="login" class="auth-tab ${accountMode === 'login' ? 'active' : ''}" aria-pressed="${accountMode === 'login'}">🏡 Đăng nhập</button><button type="button" data-action="auth-tab" data-mode="register" class="auth-tab ${accountMode === 'register' ? 'active' : ''}" aria-pressed="${accountMode === 'register'}">🌱 Tạo tài khoản</button></div>
+      <form id="auth-form">
+        <div class="field"><label for="username">👩‍🌾 Tên người chơi</label><input id="username" name="username" autocomplete="username" maxlength="18" placeholder="Ví dụ: NongDanXanh" required></div>
+        <div class="field"><label for="pin">🔒 Mã PIN (4–8 chữ số)</label><input id="pin" name="pin" type="password" inputmode="numeric" autocomplete="${accountMode === 'register' ? 'new-password' : 'current-password'}" minlength="4" maxlength="8" pattern="[0-9]{4,8}" placeholder="Nhập mã PIN" required></div>
+        <p class="auth-error" id="auth-error" role="alert"></p>
+        <button type="submit" class="btn btn-primary btn-block auth-submit">${accountMode === 'register' ? '✨ Bắt đầu nông trại mới' : '🌻 Vào nông trại'}</button>
+      </form>
+      <div class="auth-separator"><span>hoặc tiếp tục bằng</span></div>
+      <div class="social-buttons">
+        <button type="button" class="social-btn social-google" data-action="social-login" data-provider="google"><span class="social-google-g" aria-hidden="true">G</span><span>Tiếp tục với Google</span></button>
+        <button type="button" class="social-btn social-facebook" data-action="social-login" data-provider="facebook"><span class="social-facebook-f" aria-hidden="true">f</span><span>Tiếp tục với Facebook</span></button>
+      </div>
+      <p class="auth-social-status" id="social-login-status" role="status">${window.MocMocSocial?.configured() ? '🔐 Đăng nhập an toàn thông qua Firebase.' : '🔧 Chức năng Google/Facebook cần thiết lập Firebase trước khi sử dụng.'}</p>
+      <p class="auth-info">🌾 Bản chơi thử lưu nông trại trên thiết bị này. Đăng nhập Google/Facebook không tự đồng bộ tiến trình giữa các máy. Không dùng mã PIN quan trọng.</p>
+    </section>
+  </main>`;
   if (overlay) overlay.classList.add('hidden');
 }
 async function pinHash(user, pin) {
@@ -155,8 +171,32 @@ async function submitAuth(event) {
     setLocal(KEY_ACTIVE, activeUser); screen = 'farm'; processWorld(); window.MocMocAudio.effect('login'); render();
   }
 }
+// Cầu nối tài khoản Firebase thật -> dữ liệu game cục bộ, phân tách khỏi tài khoản PIN.
+window.MocMocEnterSocial = function(user) {
+  if (!user || !user.uid) return;
+  const id = `oauth:${user.uid}`;
+  if (activeUser === id && state) return;
+  const name = String(user.displayName || user.email?.split('@')[0] || 'Nông dân').trim().slice(0, 18) || 'Nông dân';
+  const saved = safeJSON(getLocal(STATE_PREFIX + id), null);
+  activeUser = id;
+  state = normalizeState(saved, name);
+  setLocal(KEY_ACTIVE, id);
+  screen = 'farm';
+  navMenuOpen = false;
+  processWorld();
+  save();
+  window.MocMocAudio?.effect('login');
+  render();
+  if (!saved || !state.tutorialDone) openTutorial(0);
+};
+window.MocMocSocialSessionGone = function() {
+  if (!String(getLocal(KEY_ACTIVE) || '').startsWith('oauth:')) return;
+  activeUser = null; state = null; setLocal(KEY_ACTIVE, '');
+  accountMode = 'login'; loginScreen();
+};
 function restore() {
   const id = getLocal(KEY_ACTIVE);
+  if (String(id || '').startsWith('oauth:')) { loginScreen(); return; }
   const user = safeJSON(getLocal(KEY_ACCOUNTS), []).find(u => u.id === id);
   if (id && user) {
     activeUser = id;
@@ -214,7 +254,7 @@ function render() {
   const priorSeedScroll = $('seed-strip')?.scrollLeft || 0;
   const si = seasonInfo();
   const audioPrefs = window.MocMocAudio.snapshot();
-  app.innerHTML = `<div class="game">
+  app.innerHTML = `<div class="game ${screen === 'farm' ? 'pixel-game' : ''}">
     <header class="hud"><div class="hud-top"><div><h1 class="hud-brand">🌿 Mộc Mộc Farm</h1><div class="hud-lvl">NÔNG TRẠI BÌNH YÊN · CẤP ${level()}</div></div>
     ${profileMenuMarkup()}</div>
     <div class="hud-middle"><span class="pill">🪙 <span id="money-value">${formatCoins(state.coins)}</span></span><span class="pill">💧 <span id="water-value">${state.water}</span>/20</span><span class="pill">${si.seasonIcon} ${si.seasonName}</span><span class="pill clock-chip" id="clock-label">🗓️ ${timeLabel(si)}</span><button type="button" class="pill audio-hud-button" data-action="open-sound" title="Cài đặt âm thanh" aria-label="Cài đặt âm thanh">${audioPrefs.music ? '🎵' : '🔇'} Âm thanh</button></div></header>
@@ -226,6 +266,7 @@ function render() {
   const seedStrip = $('seed-strip');
   if (seedStrip) seedStrip.scrollLeft = priorSeedScroll;
   if (modal) drawModal();
+  if (screen === 'farm') requestAnimationFrame(() => window.MocMocPixel?.mount());
 }
 function profileMenuMarkup() {
   const items = [
@@ -297,17 +338,19 @@ function cropAppearance(p) {
     ${p.pest ? `<span class="pest-alert">${PESTS[p.pest]?.emoji || '🐛'}</span>` : ''}`;
 }
 function farmMarkup(si) {
-  const rain = si.weather.id === 'rain';
-  return `<section class="world ${si.night ? 'night' : ''} ${rain ? 'rain' : ''}">
-    <div class="sky"><span class="${si.night ? 'moon' : 'sun'}"></span><span class="cloud"></span><span class="cloud c2"></span>${rain ? '<span class="rain-drop">💧</span><span class="rain-drop">💧</span><span class="rain-drop">💧</span><span class="rain-drop">💧</span>' : ''}</div>
-    <div class="land-back"></div><span class="tree t1">🌳</span><span class="tree t2">🌲</span><span class="tree t3">🌻</span><span class="farm-barn">🏠</span>
-    <div class="world-top"><div class="weather-card"><div class="weather-name">${si.weather.icon} ${si.weather.label} · ${si.seasonName}</div><p class="weather-hint">${si.weather.hint} · thời tiết mô phỏng</p></div><button class="help-btn" data-action="tutorial" title="Hướng dẫn">?</button></div>
-    <div class="npc-row"><button class="npc" data-action="open-shop" data-shop="seed"><span class="npc-pic">👩‍🌾</span><span class="npc-name">Cô Mây</span><span class="npc-desc">Hạt giống</span></button>
-    <button class="npc" data-action="open-shop" data-shop="sell"><span class="npc-pic">👨‍🌾</span><span class="npc-name">Chú Tư</span><span class="npc-desc">Thu mua</span></button>
-    <button class="npc" data-action="open-shop" data-shop="tool"><span class="npc-pic">👨‍🔧</span><span class="npc-name">Bác Nâu</span><span class="npc-desc">Dụng cụ</span></button></div>
-    <div class="plot-ground"><div class="plot-grid">${state.plots.map((p, i) => `<button class="plot ${!p ? 'empty' : p.hp <= 0 ? 'dead' : getProgress(p) >= 1 ? 'ready' : ''}" data-action="plot" data-index="${i}" aria-label="Ô đất số ${i+1}, ${!p ? `trống, gieo ${CROPS[state.selectedSeed]?.name || 'Cà rốt'}` : `đang trồng ${CROPS[p.crop]?.name || 'cây'}`}">${cropAppearance(p)}</button>`).join('')}</div></div>
-    <div class="world-footer"><button class="well" data-action="well"><span>🪣</span> Giếng nước · +6 💧</button><div class="player-walk">${doll(state.avatar,'small')}<span>Vườn của ${esc(state.name)}</span></div></div></section>
-    <div class="farm-tip"><span class="spark">✨</span><span><b>Mẹo:</b> Chọn hạt ở thanh phía dưới rồi chạm một ô trống để gieo ngay. Chạm vào cây đã trồng để chăm sóc hoặc thu hoạch.</span></div>`;
+  return `<section class="pixel-shell" aria-label="Bản đồ nông trại pixel art">
+      <canvas id="pixel-world" class="pixel-canvas" aria-label="Bản đồ: chạm vào ô đất để trồng hoặc thu hoạch; chạm NPC để mua bán"></canvas>
+      <div class="pixel-scene-label"><b>🌻 MỘC MỘC VALLEY</b><span>${si.weather.icon} ${si.weather.label} · ${si.seasonName}</span></div>
+      <button class="pixel-help" data-action="tutorial" title="Xem hướng dẫn">?</button>
+      <div class="pixel-tip">${si.night ? '🌙 Đêm yên bình' : '🍃 Ngày mới trên nông trại'} · Chạm luống đất để gieo / thu hoạch</div>
+      <div class="pixel-pad" aria-label="Điều khiển nhân vật">
+        <button type="button" class="pixel-move up" data-move="up" aria-label="Đi lên">▲</button>
+        <button type="button" class="pixel-move left" data-move="left" aria-label="Sang trái">◀</button>
+        <button type="button" class="pixel-move down" data-move="down" aria-label="Đi xuống">▼</button>
+        <button type="button" class="pixel-move right" data-move="right" aria-label="Sang phải">▶</button>
+      </div>
+      <button class="pixel-action" type="button" data-action="nearby" title="Tương tác với đối tượng gần nhất">✋ <span>Tương tác</span></button>
+    </section>`;
 }
 function shopMarkup() {
   const people = { seed: ['👩‍🌾', 'Cô Mây', 'Chuyên bán hạt giống tốt nhất làng'], sell: ['👨‍🌾', 'Chú Tư', 'Thu mua nông sản với giá rõ ràng'], tool: ['👨‍🔧', 'Bác Nâu', 'Dụng cụ bảo vệ & phân bón'] };
@@ -369,8 +412,8 @@ function drawModal() {
       <p class="small muted" style="text-align:center;margin-top:12px">Trên iPhone, nhạc bắt đầu sau thao tác đầu tiên của bạn. Cài đặt được ghi nhớ cho lần chơi sau.</p>`;
   } else if (modal.type === 'tutorial') {
     const slides = [
-      ['🌈','Chào mừng tới Mộc Mộc Farm!','Xin chào người nông dân! Cùng xây dựng nông trại xanh bằng cách chăm sóc những luống cây đầu tiên.'],
-      ['🌱','Bắt đầu trồng cây','Chọn loại hạt ở thanh ngay phía dưới màn hình, sau đó chạm trực tiếp vào ô đất trống để gieo. Bạn không cần mở bảng chọn hạt nữa!'],
+      ['🌈','Chào mừng tới Mộc Mộc Farm!','Chào mừng đến Mộc Mộc Valley! Đi lại bằng WASD hoặc phím mũi tên trên laptop, dùng các nút ▲ ◀ ▼ ▶ trên điện thoại. Chạm vào bản đồ để nhân vật đi đến đó.'],
+      ['🌱','Bắt đầu trồng cây','Chọn hạt ở thanh dưới màn hình rồi chạm vào ô đất trên bản đồ pixel để gieo. Chạm cây đã chín để thu hoạch ngay trong một lần chạm!'],
       ['💧','Tưới nước & bón phân','Chạm vào cây đang lớn để tưới nước hoặc bón phân. Cây sẽ lớn nhanh hơn; phân hữu cơ còn tăng sản lượng thu hoạch.'],
       ['🐛','Bảo vệ khu vườn','Sâu, chim và thỏ có thể ghé thăm! Mua đúng công cụ từ Bác Nâu để đuổi chúng. Giếng nước cho bạn lấy thêm nước miễn phí.'],
       ['🧺','Thu hoạch, bán và làm nhiệm vụ','Khi cây chín, chạm ô đất để thu hoạch. Đến Chú Tư bán nông sản, mua thêm hạt từ Cô Mây và hoàn thành nhiệm vụ để nhận xu.']
@@ -490,6 +533,7 @@ function onAction(btn) {
   const idx = Number(btn.dataset.index);
   const id = btn.dataset.id;
   if (action === 'auth-tab') { accountMode = btn.dataset.mode === 'login' ? 'login' : 'register'; loginScreen(); }
+  else if (action === 'social-login') { window.MocMocSocial?.signIn(btn.dataset.provider); }
   else if (!state) return;
   else if (action === 'close') closeModal();
   else if (action === 'open-sound') { navMenuOpen = false; modal = { type:'sound' }; render(); }
@@ -518,13 +562,20 @@ function onAction(btn) {
   else if (action === 'defend') chasePest(idx,false);
   else if (action === 'shoo') chasePest(idx,true);
   else if (action === 'well') fetchWater();
+  else if (action === 'nearby') window.MocMocPixel?.nearby();
   else if (action === 'buy') buy(btn.dataset.kind,id);
   else if (action === 'sell') sellProduce(id,false);
   else if (action === 'sell-all') sellProduce(id,true);
   else if (action === 'quest-claim') claimQuest(id);
   else if (action === 'avatar') customize(btn.dataset.key,btn.dataset.value);
   else if (action === 'avatar-save') toast('💾 Diện mạo đã được lưu tự động!');
-  else if (action === 'logout') { closeModal(); setLocal(KEY_ACTIVE, ''); activeUser = null; state = null; accountMode = 'login'; loginScreen(); toast('Bạn đã đăng xuất. Nông trại vẫn được lưu trên thiết bị.'); }
+  else if (action === 'logout') {
+    const wasSocial = String(activeUser || '').startsWith('oauth:');
+    closeModal(); setLocal(KEY_ACTIVE, ''); activeUser = null; state = null;
+    accountMode = 'login'; loginScreen();
+    if (wasSocial) window.MocMocSocial?.signOut();
+    toast('Bạn đã đăng xuất. Nông trại vẫn được lưu trên thiết bị.');
+  }
 }
 // Một số trình duyệt yêu cầu gesture trực tiếp để phát âm thanh lần đầu.
 document.addEventListener('pointerdown', () => window.MocMocAudio.unlock(), { passive: true });
@@ -563,9 +614,8 @@ setInterval(() => {
   if (label !== lastClockLabel) { lastClockLabel = label; const clock = $('clock-label'); if (clock) clock.textContent = `🗓️ ${label}`; }
   if (now > nextRefresh && screen === 'farm') {
     nextRefresh = now + 3000;
-    const content = $('game-content');
-    if (content) content.innerHTML = farmMarkup(si);
-    // Rerender the plot sheet only while showing a growing crop; avoid keyboard or focus disruption.
+    // Canvas tự vẽ lại mỗi khung hình, tránh thay canvas làm ngắt điều khiển nhân vật.
+    if (!document.getElementById('pixel-world')) window.MocMocPixel?.mount();
     if (modal?.type === 'plot' && state.plots[modal.index]) drawModal();
   }
 }, 1000);
@@ -591,3 +641,4 @@ if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.
   });
 }
 restore();
+window.MocMocSocial?.boot();

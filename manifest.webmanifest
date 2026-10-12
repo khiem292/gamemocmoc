@@ -2,7 +2,7 @@
   "id": "./",
   "name": "Mộc Mộc Farm - Nông trại trong mơ",
   "short_name": "Mộc Mộc Farm",
-  "description": "Game trồng cây 2D chơi trên iPhone, hoạt động ngoại tuyến sau lần truy cập đầu.",
+  "description": "Game nông trại pixel art 2D, khám phá thung lũng và trồng cây trên iPhone, hoạt động ngoại tuyến sau lần truy cập đầu.",
   "lang": "vi",
   "start_url": "./index.html",
   "scope": "./",

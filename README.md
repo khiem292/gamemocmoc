@@ -1,88 +1,75 @@
-# 🌿 Mộc Mộc Farm — Game nông trại cho iPhone
+# 🌻 Mộc Mộc Farm — Phiên bản Mộc Mộc Valley (Pixel Art 2D)
 
-Một **game 2D/PWA** dùng HTML, CSS và JavaScript thuần. Có thể chơi trên máy tính lẫn Safari iPhone, không cần cài thư viện hay tài khoản dịch vụ ngoài.
+Bản cập nhật **nguyên gốc** lấy cảm hứng từ thể loại nông trại 2D nhìn từ trên xuống. Nhà, chợ, hồ nước, NPC, cây cối, nhân vật và vườn rau được **vẽ riêng bằng Canvas**, không sao chép logo hay sprite từ Stardew Valley.
 
-## Tính năng có thể chơi
+## Những gì mới
 
-- Đăng nhập / tạo tài khoản thử nghiệm bằng tên và PIN trên **thiết bị hiện tại**; hướng dẫn tân thủ 5 bước ngay sau khi tạo tài khoản.
-- Tạo nhân vật theo màu da, tóc, kiểu tóc, quần áo và nón.
-- 12 ô đất, 5 loại cây: cà rốt, cà chua, bắp ngô, dâu tây, bí ngô. **Thanh hạt giống cố định ở sát dưới màn hình, menu mở bằng ảnh đại diện góc trên bên phải**; chọn hạt rồi chạm ô đất trống để gieo ngay, không có cửa sổ chọn hạt.
-- Cây mọc theo thời gian thực: khi đóng Safari và mở lại, thời gian đã qua vẫn được tính.
-- Tưới nước (giúp cây lớn nhanh), lấy nước từ giếng; phân hữu cơ tăng tốc và tăng đôi nông sản.
-- Mô phỏng xuân/hạ/thu/đông theo ngày tháng năm thực tế của Việt Nam, ngày/đêm theo giờ hiện tại, nắng/mây/gió/mưa mô phỏng theo ngày. Thời tiết này **không phải dữ liệu khí tượng thật**.
-- Sâu, chim, thỏ có thể phá hoại cây. Dùng bình xịt sinh học, bù nhìn hoặc lưới để đuổi, hoặc thử xua tay.
-- Ba NPC: Cô Mây bán hạt, Chú Tư thu mua nông sản, Bác Nâu bán công cụ và phân bón.
-- Xu, kinh nghiệm nhân vật, nhiệm vụ, kho đồ, lưu tiến trình ở localStorage.
-- PWA có biểu tượng, chế độ mở như ứng dụng và bộ nhớ đệm offline qua service worker.
+- Bản đồ nông trại pixel art vẽ bằng canvas, có nhà gỗ, chợ, hồ nước, cây cối, hàng rào, gà, thỏ và 12 ô trồng cây.
+- Nhân vật đi lại được: laptop dùng **WASD/phím mũi tên**, điện thoại dùng **bộ nút điều khiển**. Chạm bãi cỏ để di chuyển về điểm chạm.
+- Chạm vào luống đất trống để gieo hạt đã chọn; chạm vào cây chín để thu hoạch 1 lần chạm; chạm cây đang lớn để tưới, bón phân hoặc xử lý sâu bệnh.
+- Chạm NPC trên bản đồ để mở cửa hàng: **Cô Mây** bán hạt, **Chú Tư** mua nông sản, **Bác Nâu** bán công cụ.
+- Chạm giếng để lấy nước. Nút ✋ dùng để tương tác với đối tượng gần nhân vật.
+- Giữ nguyên đăng nhập, nhân vật tùy chỉnh, thanh hạt phía dưới, menu hồ sơ, âm nhạc, nhiệm vụ, ngày/giờ, thời tiết mô phỏng theo mùa, thời gian cây lớn và tiến trình cũ.
 
-## Cách gieo hạt ở bản cập nhật
+**Phạm vi:** đây là phiên bản chơi thử pixel art có thể chơi được trên PWA. Chưa phải game Stardew Valley hoàn chỉnh, chưa có bản đồ nhiều khu, câu cá, hang động hay multiplayer.
 
-1. Trong **Vườn**, chọn hạt trên **thanh hạt giống cố định phía dưới** (vuốt ngang để xem đủ các loại).
-2. Chạm vào **ô đất trống**: hạt đang chọn được gieo ngay, số hạt trong túi giảm 1. Không phải mở cửa sổ chọn hạt.
-3. Chạm vào **cây đang lớn** để tưới, bón phân hoặc xua thú; chạm vào **cây đã chín** để thu hoạch ngay trong một lần chạm.
-4. Nếu hết hạt, nhấn **🛒 Mua hạt** bên phải thanh hoặc gặp NPC **Cô Mây**.
+## Cách cập nhật game hiện tại trên GitHub Pages mà không đổi link
 
-Khi tải bản mới lên GitHub Pages, nhớ tải đè cả `game.js`, `style.css` và `sw.js` để nhận thay đổi. Nếu iPhone còn hiển thị bản cũ, hãy đóng và mở lại web app hoặc tải lại Safari khi có mạng.
+1. Giải nén file ZIP và mở **repository GitHub CŨ** đang lưu game của bạn.
+2. Upload đè các file **`index.html`, `style.css`, `game.js`, `sw.js`, `manifest.webmanifest`**, và upload thêm file mới **`pixel-world.js`**. Giữ hoặc tải lại `audio.js`, `farm-theme.mp3` và `assets/` nếu chưa có.
+3. Nhấn **Commit changes**. GitHub Pages sẽ cập nhật game ở **URL hiện tại**, không cần tạo repository mới hoặc thêm lại biểu tượng iPhone.
+4. Đợi GitHub Pages triển khai xong, mở lại game trên iPhone khi có Internet. Bản mới có service worker v6 để làm mới bộ nhớ đệm. Nếu vẫn hiện bản cũ, tải lại trang rồi mở lại game.
 
-## Thử nhanh trên máy tính
+**Giữ tiến trình:** File mới dùng lại các khóa localStorage của bản trước. Tiến trình thường được giữ nếu dùng cùng trình duyệt và tên miền, không xóa dữ liệu web. Đăng nhập hiện chỉ lưu cục bộ trên thiết bị, chưa có máy chủ đồng bộ. Hãy sao lưu trước khi thay đổi lớn.
 
-Mở `index.html` bằng Chrome hoặc Edge. Với bản lưu `file://`, game vẫn có thể hoạt động nhưng bộ nhớ đệm PWA cần HTTP(S). Để thử chuẩn hơn, mở terminal trong thư mục rồi chạy:
+## Chạy thử trên máy tính
+
+Mở `index.html` trên Chrome/Edge hoặc chạy trong thư mục game:
 
 ```bash
 python -m http.server 8000
 ```
 
-Truy cập `http://localhost:8000`.
+Rồi mở `http://localhost:8000`. Để cài PWA trên iPhone, cần triển khai trang HTTPS (ví dụ GitHub Pages) và chọn **Safari → Chia sẻ → Thêm vào Màn hình chính**. Đây chưa phải file `.ipa`.
 
-## Đưa lên GitHub Pages
+## Cấu trúc
 
-1. Đăng nhập GitHub → **New repository** → đặt tên `mocmoc-farm` → **Public** (GitHub Pages trên GitHub Free thường cần repository Public).
-2. Vào repository → **Add file → Upload files**. Giải nén ZIP rồi tải **các file và thư mục BÊN TRONG** thư mục `mocmoc-farm-ios` lên gốc repository, gồm `index.html`, `game.js`, `style.css`, `manifest.webmanifest`, `sw.js`, thư mục `assets/`. Không cần tải `make_icon.py`.
-3. Cuộn xuống → **Commit changes**.
-4. Vào **Settings → Pages → Build and deployment → Deploy from a branch** → chọn nhánh `main`, thư mục `/(root)` → **Save**.
-5. GitHub sẽ cung cấp đường dẫn tương tự `https://TEN-TAI-KHOAN.github.io/mocmoc-farm/` sau khi triển khai xong. **Đây chỉ là mẫu URL, không phải địa chỉ đã triển khai**.
+- `index.html`: màn hình game
+- `style.css`: responsive, giao diện pixel và các cửa hàng
+- `game.js`: thông tin và chức năng game có lưu dữ liệu
+- `pixel-world.js`: bản đồ pixel, nhân vật di chuyển, trồng cây, NPC, thời tiết
+- `audio.js`, `farm-theme.mp3`: âm thanh/nhạc
+- `sw.js`, `manifest.webmanifest`: cập nhật giữ nguyên URL và PWA
+- `assets/`: icon PWA
 
-## Thêm lên màn hình chính iPhone
-
-1. Trên iPhone mở **Safari** và truy cập URL GitHub Pages của bạn.
-2. Chọn nút **Chia sẻ** (hình vuông có mũi tên lên).
-3. Chọn **Thêm vào Màn hình chính** (*Add to Home Screen*) rồi nhấn **Thêm**.
-4. Nhấn vào biểu tượng **Mộc Mộc Farm** trên iPhone để chơi gần giống ứng dụng độc lập.
-
-Lưu ý: Đây là ứng dụng web cài lên màn hình chính (**PWA**), **không phải** ứng dụng iOS native `.ipa` và chưa được phát hành trên App Store. Nếu muốn phát hành App Store sau này có thể tiếp tục phát triển bằng Swift/Unity hoặc đóng gói WebView phù hợp.
-
-## Dữ liệu và đăng nhập
-
-- Đây là **đăng nhập mẫu**, không phải xác thực máy chủ. Không dùng lại mật khẩu hoặc PIN ngân hàng. Mã PIN được băm phía trình duyệt, dữ liệu tiến trình lưu trong `localStorage` và chỉ có trên trình duyệt + miền hiện tại.
-- Khi xóa dữ liệu website, vào chế độ riêng tư hoặc đổi thiết bị/tên miền, có thể mất tiến trình. Chưa có lưu đồng bộ/khôi phục tài khoản.
-- Game không kết nối API thời tiết; thông tin nắng mưa chỉ là hệ thống mô phỏng.
-
-## Thay đổi tốc độ mọc của cây
-
-Mở `game.js`, phần đầu `const CROPS = { ... }`. Chỉnh `seconds`, `seed` và `sell`. Ví dụ `seconds: 55` nghĩa là khoảng 55 giây thực tế, trước ưu đãi mùa và hỗ trợ tưới/phân.
-
-## Cấu trúc dự án
-
-```text
-mocmoc-farm-ios/
-├── index.html              # Khung trang web
-├── style.css               # Giao diện responsive + thế giới nông trại
-├── game.js                 # Tính năng / dữ liệu / nhiệm vụ
-├── audio.js                # Nhạc nền và tiếng hiệu ứng
-├── farm-theme.mp3          # Bản nhạc nền không lời gốc
-├── manifest.webmanifest    # Cài đặt PWA
-├── sw.js                   # Hoạt động ngoại tuyến
-├── assets/
-│   ├── icon-192.png        # Biểu tượng iPhone / PWA
-│   └── icon-512.png
-└── README.md               # Hướng dẫn
-```
+Không cần tài nguyên hay thư viện từ bên ngoài để vẽ bản đồ. Nhạc nền phát sau khi chạm đầu tiên theo chính sách của Safari.
 
 
-## Cập nhật giao diện menu hồ sơ
+## Bản cập nhật đăng nhập Pixel Art + Google / Facebook
 
-- **Không còn nút ☰ nổi** ở góc dưới màn hình.
-- Nhấn **ảnh đại diện trên cùng bên phải** để mở hoặc đóng menu Vườn, Cửa hàng, Kho đồ, Nhân vật, Nhiệm vụ và Âm thanh.
-- Menu xổ ngay phía dưới ảnh đại diện trên máy tính và iPhone. Chạm vùng khác hoặc nhấn `Esc` để đóng menu.
-- Các tính năng trồng cây, thu hoạch 1 chạm, âm thanh, nhạc nền và dữ liệu đã lưu được giữ nguyên.
-- Tải đè `game.js`, `style.css`, `sw.js` vào cùng repository GitHub Pages để giữ nguyên link. Các file nhạc và tài nguyên giữ nguyên nếu repo đã có.
+Màn hình đăng nhập được làm lại theo tông gỗ/pixel art, có thể dùng PIN cũ hoặc chọn Google/Facebook. **Hai nút mạng xã hội chỉ hoạt động SAU KHI cấu hình Firebase thực tế; bản tải về không chứa thông tin dự án của bạn.** Không có đăng nhập giả.
+
+### Kích hoạt Google
+
+1. Vào https://console.firebase.google.com → Create project (hoặc dùng project sẵn có) → Add app **Web**.
+2. Sao chép các giá trị `apiKey`, `authDomain`, `projectId`, `appId` từ phần Firebase SDK setup and configuration vào `firebase-config.js`. Đây là thông tin công khai của Web App; **không** thêm private key/service account vào file này.
+3. Vào **Authentication → Sign-in method**, bật **Google**.
+4. Vào **Authentication → Settings → Authorized domains**, thêm tên miền đang host game (ví dụ `tenban.github.io`; không thêm `https://` hoặc đường dẫn repo).
+5. Đưa file lên HTTPS trên GitHub Pages, thử đăng nhập từ Chrome/Safari thông thường trước.
+
+### Kích hoạt Facebook
+
+1. Vào https://developers.facebook.com tạo một Meta Developer app tương thích **Facebook Login**; bật Facebook Login và làm theo yêu cầu ứng dụng.
+2. Trong **Firebase Authentication → Sign-in method → Facebook**, nhập **Facebook App ID** và **App Secret** vào giao diện Firebase Console (**KHÔNG đưa App Secret vào mã nguồn, GitHub hoặc `firebase-config.js`**).
+3. Ở Meta Developer → Facebook Login, thêm **Valid OAuth Redirect URI** mà Firebase hiển thị (thường là `https://PROJECT_ID.firebaseapp.com/__/auth/handler`).
+4. Kiểm tra trạng thái ứng dụng, vai trò tài khoản thử nghiệm, và các yêu cầu quyền riêng tư/đăng nhập của Meta trước khi công khai.
+
+### Những giới hạn cần biết
+
+- Social login là **xác thực Firebase thật** và dùng tài khoản nông trại riêng theo Firebase UID. Đăng nhập xã hội **không tự chuyển** các nông trại PIN trước đây sang Google/Facebook để tránh nhập nhầm dữ liệu.
+- Tiến trình cây trồng, tiền xu vẫn được lưu cục bộ trên thiết bị. Muốn chuyển máy/phòng mất dữ liệu cần thiết kế thêm lưu đám mây (ví dụ Cloud Firestore + Security Rules).
+- Bản HTML chạy trực tiếp bằng `file://` dùng được PIN, nhưng **không chạy xác thực OAuth**. Dùng URL HTTPS trên GitHub Pages.
+- Safari iPhone và đặc biệt PWA cài ở màn hình chính có thể chặn popup hoặc gặp hạn chế cookie. Vì vậy cần **kiểm tra bằng Safari trước**; nếu không hoạt động ổn định, cần thiết kế quy trình chuyển hướng đáp ứng hướng dẫn Firebase redirect best practices (thường dùng Firebase Hosting hoặc proxy auth trên cùng miền). Không nên giả định mọi thiết bị đăng nhập được trước khi thử.
+- Chỉ cần upload `index.html`, `style.css`, `game.js`, `sw.js` và 2 file mới `firebase-config.js`, `social-auth.js` **vào repository GitHub cũ**; URL game không đổi.
+
+Tài liệu chính thức: https://firebase.google.com/docs/auth/web/google-signin và https://firebase.google.com/docs/auth/web/facebook-login ; https://firebase.google.com/docs/auth/web/redirect-best-practices
