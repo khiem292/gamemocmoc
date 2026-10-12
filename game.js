@@ -48,6 +48,7 @@ let selectedPlot = -1;
 let nextRefresh = 0;
 let lastClockLabel = '';
 let navMenuOpen = false;
+let seedDockOpen = true;
 
 function safeJSON(text, fallback) { try { return JSON.parse(text) ?? fallback; } catch (_) { return fallback; } }
 function getLocal(key) { try { return localStorage.getItem(key); } catch (_) { return null; } }
@@ -257,9 +258,10 @@ function render() {
   app.innerHTML = `<div class="game ${screen === 'farm' ? 'pixel-game' : ''}">
     <header class="hud"><div class="hud-top"><div><h1 class="hud-brand">🌿 Mộc Mộc Farm</h1><div class="hud-lvl">NÔNG TRẠI BÌNH YÊN · CẤP ${level()}</div></div>
     ${profileMenuMarkup()}</div>
-    <div class="hud-middle"><span class="pill">🪙 <span id="money-value">${formatCoins(state.coins)}</span></span><span class="pill">💧 <span id="water-value">${state.water}</span>/20</span><span class="pill">${si.seasonIcon} ${si.seasonName}</span><span class="pill clock-chip" id="clock-label">🗓️ ${timeLabel(si)}</span><button type="button" class="pill audio-hud-button" data-action="open-sound" title="Cài đặt âm thanh" aria-label="Cài đặt âm thanh">${audioPrefs.music ? '🎵' : '🔇'} Âm thanh</button></div></header>
+    <div class="hud-middle"><span class="pill">🪙 <span id="money-value">${formatCoins(state.coins)}</span></span><span class="pill">💧 <span id="water-value">${state.water}</span>/20</span><span class="pill season-chip">${si.seasonIcon} ${si.seasonName}</span><span class="pill clock-chip">🕒 <span id="clock-compact">${String(si.hour).padStart(2,'0')}:${String(si.minute).padStart(2,'0')}</span><span class="clock-full" id="clock-label"> · ${timeLabel(si)}</span></span><button type="button" class="pill audio-hud-button" data-action="open-sound" title="Cài đặt âm thanh" aria-label="Cài đặt âm thanh">${audioPrefs.music ? '🎵' : '🔇'} Âm thanh</button></div></header>
     <main class="game-content ${screen === 'farm' ? 'farm-content' : ''}" id="game-content">${screen === 'farm' ? farmMarkup(si) : screen === 'shop' ? shopMarkup() : screen === 'inventory' ? inventoryMarkup() : screen === 'character' ? characterMarkup() : questsMarkup()}</main>
     ${screen === 'farm' ? seedToolbarMarkup() : ''}
+    <aside class="rotate-hint" aria-label="Hướng dẫn xoay điện thoại"><div class="rotate-panel"><div class="rotate-phone">📱<span>↻</span></div><h2>Hãy xoay ngang điện thoại</h2><p>Mộc Mộc Farm được thiết kế để chơi theo chiều ngang. Hãy tắt khóa xoay màn hình nếu cần.</p></div></aside>
     </div>`;
   const content = $('game-content');
   if (content) content.scrollTop = priorScroll;
@@ -306,9 +308,11 @@ function seedToolbarMarkup() {
   const chosen = CROPS[state.selectedSeed] ? state.selectedSeed : 'carrot';
   const crop = CROPS[chosen];
   const qty = state.seeds[chosen] || 0;
-  return `<section class="seed-dock" aria-label="Thanh chọn hạt giống">
-    <div class="seed-dock-head"><span><b>🌱 Túi hạt giống</b> <span class="seed-instruction">· Chọn hạt → chạm ô đất</span></span>
-      <span class="seed-current" id="seed-current">${qty > 0 ? `Đang chọn: ${crop.emoji} ${crop.name}` : `⚠️ Hết ${crop.name}`}</span></div>
+  return `<section id="seed-dock" class="seed-dock ${seedDockOpen ? '' : 'collapsed'}" aria-label="Khay hạt giống thu gọn">
+    <button class="seed-collapsed-trigger" type="button" data-action="toggle-seeds" aria-expanded="${seedDockOpen}" aria-label="Mở khay hạt giống">🌱 <span id="seed-collapsed-name">${crop.emoji} ${crop.name} ×${qty}</span> <span aria-hidden="true">⌃</span></button>
+    <div class="seed-dock-head"><span><b>🌱 HẠT GIỐNG</b> <span class="seed-instruction">· chạm vào đất để gieo</span></span>
+      <span class="seed-current" id="seed-current">${qty > 0 ? `${crop.emoji} ${crop.name} ×${qty}` : `⚠️ Hết ${crop.name}`}</span>
+      <button class="seed-minimize" type="button" data-action="toggle-seeds" aria-expanded="${seedDockOpen}" aria-label="Thu gọn khay hạt giống">⌄</button></div>
     <div class="seed-strip" id="seed-strip" role="group" aria-label="Chọn loại hạt">
       ${Object.entries(CROPS).map(([id,c]) => { const n = state.seeds[id] || 0; return `<button type="button" class="seed-item ${chosen === id ? 'selected' : ''} ${n < 1 ? 'sold-out' : ''}" data-action="select-seed" data-id="${id}" aria-label="${c.name}, còn ${n} hạt" aria-pressed="${chosen === id}"><span class="seed-emoji">${c.emoji}</span><span class="seed-name">${c.name}</span><span class="seed-count">×${n} ${n === 0 ? '· Hết' : ''}</span></button>`; }).join('')}
       <button type="button" class="seed-item seed-buy" data-action="open-shop" data-shop="seed" aria-label="Đến Cô Mây mua thêm hạt giống"><span class="seed-emoji">🛒</span><span class="seed-name">Mua hạt</span><span class="seed-count">Cô Mây</span></button>
@@ -324,7 +328,9 @@ function selectSeed(id) {
   });
   const available = state.seeds[id] || 0;
   const label = $('seed-current');
-  if (label) label.textContent = available ? `Đang chọn: ${CROPS[id].emoji} ${CROPS[id].name}` : `⚠️ Hết ${CROPS[id].name}`;
+  if (label) label.textContent = available ? `${CROPS[id].emoji} ${CROPS[id].name} ×${available}` : `⚠️ Hết ${CROPS[id].name}`;
+  const mini = $('seed-collapsed-name');
+  if (mini) mini.textContent = `${CROPS[id].emoji} ${CROPS[id].name} ×${available}`;
   if (!available) toast(`Bạn đã hết hạt ${CROPS[id].name}. Ghé Cô Mây mua thêm nhé!`);
 }
 function timeLabel(si) { return `${String(si.day).padStart(2,'0')}/${String(si.month).padStart(2,'0')}/${si.year} · ${String(si.hour).padStart(2,'0')}:${String(si.minute).padStart(2,'0')}`; }
@@ -547,6 +553,13 @@ function onAction(btn) {
   else if (action === 'open-shop') { shopTab = btn.dataset.shop; navigate('shop'); }
   else if (action === 'shop-tab') { shopTab = btn.dataset.shop; render(); }
   else if (action === 'select-seed') selectSeed(id);
+  else if (action === 'toggle-seeds') {
+    seedDockOpen = !seedDockOpen;
+    const dock = $('seed-dock');
+    dock?.classList.toggle('collapsed', !seedDockOpen);
+    dock?.querySelectorAll('[data-action="toggle-seeds"]').forEach(button => button.setAttribute('aria-expanded', String(seedDockOpen)));
+    window.MocMocAudio?.effect('tap');
+  }
   else if (action === 'toggle-profile-menu') setProfileMenuOpen(!navMenuOpen);
   else if (action === 'plot') {
     const plot = state.plots[idx];
@@ -611,7 +624,7 @@ setInterval(() => {
   const now = Date.now();
   const si = seasonInfo();
   const label = timeLabel(si);
-  if (label !== lastClockLabel) { lastClockLabel = label; const clock = $('clock-label'); if (clock) clock.textContent = `🗓️ ${label}`; }
+  if (label !== lastClockLabel) { lastClockLabel = label; const clock = $('clock-label'); if (clock) clock.textContent = ` · ${label}`; const compact = $('clock-compact'); if (compact) compact.textContent = `${String(si.hour).padStart(2,'0')}:${String(si.minute).padStart(2,'0')}`; }
   if (now > nextRefresh && screen === 'farm') {
     nextRefresh = now + 3000;
     // Canvas tự vẽ lại mỗi khung hình, tránh thay canvas làm ngắt điều khiển nhân vật.
