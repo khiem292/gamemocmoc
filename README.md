@@ -6,7 +6,7 @@ Một **game 2D/PWA** dùng HTML, CSS và JavaScript thuần. Có thể chơi tr
 
 - Đăng nhập / tạo tài khoản thử nghiệm bằng tên và PIN trên **thiết bị hiện tại**; hướng dẫn tân thủ 5 bước ngay sau khi tạo tài khoản.
 - Tạo nhân vật theo màu da, tóc, kiểu tóc, quần áo và nón.
-- 12 ô đất, 5 loại cây: cà rốt, cà chua, bắp ngô, dâu tây, bí ngô. **Thanh hạt giống cố định ở sát dưới màn hình, có menu ☰ gọn**; chọn hạt rồi chạm ô đất trống để gieo ngay, không có cửa sổ chọn hạt.
+- 12 ô đất, 5 loại cây: cà rốt, cà chua, bắp ngô, dâu tây, bí ngô. **Thanh hạt giống cố định ở sát dưới màn hình, menu mở bằng ảnh đại diện góc trên bên phải**; chọn hạt rồi chạm ô đất trống để gieo ngay, không có cửa sổ chọn hạt.
 - Cây mọc theo thời gian thực: khi đóng Safari và mở lại, thời gian đã qua vẫn được tính.
 - Tưới nước (giúp cây lớn nhanh), lấy nước từ giếng; phân hữu cơ tăng tốc và tăng đôi nông sản.
 - Mô phỏng xuân/hạ/thu/đông theo ngày tháng năm thực tế của Việt Nam, ngày/đêm theo giờ hiện tại, nắng/mây/gió/mưa mô phỏng theo ngày. Thời tiết này **không phải dữ liệu khí tượng thật**.
@@ -77,3 +77,12 @@ mocmoc-farm-ios/
 │   └── icon-512.png
 └── README.md               # Hướng dẫn
 ```
+
+
+## Cập nhật giao diện menu hồ sơ
+
+- **Không còn nút ☰ nổi** ở góc dưới màn hình.
+- Nhấn **ảnh đại diện trên cùng bên phải** để mở hoặc đóng menu Vườn, Cửa hàng, Kho đồ, Nhân vật, Nhiệm vụ và Âm thanh.
+- Menu xổ ngay phía dưới ảnh đại diện trên máy tính và iPhone. Chạm vùng khác hoặc nhấn `Esc` để đóng menu.
+- Các tính năng trồng cây, thu hoạch 1 chạm, âm thanh, nhạc nền và dữ liệu đã lưu được giữ nguyên.
+- Tải đè `game.js`, `style.css`, `sw.js` vào cùng repository GitHub Pages để giữ nguyên link. Các file nhạc và tài nguyên giữ nguyên nếu repo đã có.

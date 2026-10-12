@@ -216,18 +216,18 @@ function render() {
   const audioPrefs = window.MocMocAudio.snapshot();
   app.innerHTML = `<div class="game">
     <header class="hud"><div class="hud-top"><div><h1 class="hud-brand">🌿 Mộc Mộc Farm</h1><div class="hud-lvl">NÔNG TRẠI BÌNH YÊN · CẤP ${level()}</div></div>
-    <button data-action="nav" data-screen="character" class="hud-player" style="background:transparent;text-align:right"><span><div class="hud-player-title">${esc(state.name)}</div><div class="small muted">⭐ ${state.xp} XP</div></span><span class="avatar-button">${doll(state.avatar,'small')}</span></button></div>
+    ${profileMenuMarkup()}</div>
     <div class="hud-middle"><span class="pill">🪙 <span id="money-value">${formatCoins(state.coins)}</span></span><span class="pill">💧 <span id="water-value">${state.water}</span>/20</span><span class="pill">${si.seasonIcon} ${si.seasonName}</span><span class="pill clock-chip" id="clock-label">🗓️ ${timeLabel(si)}</span><button type="button" class="pill audio-hud-button" data-action="open-sound" title="Cài đặt âm thanh" aria-label="Cài đặt âm thanh">${audioPrefs.music ? '🎵' : '🔇'} Âm thanh</button></div></header>
     <main class="game-content ${screen === 'farm' ? 'farm-content' : ''}" id="game-content">${screen === 'farm' ? farmMarkup(si) : screen === 'shop' ? shopMarkup() : screen === 'inventory' ? inventoryMarkup() : screen === 'character' ? characterMarkup() : questsMarkup()}</main>
     ${screen === 'farm' ? seedToolbarMarkup() : ''}
-    ${menuDockMarkup()}</div>`;
+    </div>`;
   const content = $('game-content');
   if (content) content.scrollTop = priorScroll;
   const seedStrip = $('seed-strip');
   if (seedStrip) seedStrip.scrollLeft = priorSeedScroll;
   if (modal) drawModal();
 }
-function menuDockMarkup() {
+function profileMenuMarkup() {
   const items = [
     ['farm','🏡','Vườn'],
     ['shop','🛒','Cửa hàng'],
@@ -235,13 +235,30 @@ function menuDockMarkup() {
     ['character','🧑‍🌾','Nhân vật'],
     ['quests','📜','Nhiệm vụ']
   ];
-  return `<div class="menu-dock ${screen === 'farm' ? 'with-seed-dock' : ''} ${navMenuOpen ? 'open' : ''}">
-    <div class="menu-panel" aria-label="Điều hướng nhanh">
-      ${items.map(([id, icon, label]) => `<button data-action="nav" data-screen="${id}" class="menu-item ${screen === id ? 'active' : ''}"><span class="menu-icon">${icon}</span><span>${label}</span></button>`).join('')}
+  return `<div class="profile-area" id="profile-area">
+    <div class="hud-player-meta"><div class="hud-player-title">${esc(state.name)}</div><div class="small muted">⭐ ${state.xp} XP</div></div>
+    <button type="button" id="profile-menu-trigger" class="profile-trigger" data-action="toggle-profile-menu"
+      aria-controls="profile-menu-panel" aria-haspopup="true" aria-expanded="${navMenuOpen}"
+      aria-label="${navMenuOpen ? 'Đóng menu hồ sơ' : 'Mở menu hồ sơ'}" title="Mở menu từ ảnh đại diện">
+      <span class="avatar-button">${doll(state.avatar,'small')}</span><span class="profile-menu-chevron" aria-hidden="true">⌄</span>
+    </button>
+    <nav class="profile-menu-panel ${navMenuOpen ? 'open' : ''}" id="profile-menu-panel" aria-label="Điều hướng từ hồ sơ" ${navMenuOpen ? '' : 'hidden'}>
+      <div class="profile-menu-title">🌿 Menu nông trại</div>
+      ${items.map(([id, icon, label]) => `<button type="button" data-action="nav" data-screen="${id}" class="menu-item ${screen === id ? 'active' : ''}" ${screen === id ? 'aria-current="page"' : ''}><span class="menu-icon">${icon}</span><span>${label}</span></button>`).join('')}
+      <div class="profile-menu-separator"></div>
       <button type="button" data-action="open-sound" class="menu-item"><span class="menu-icon">🎵</span><span>Âm thanh</span></button>
-    </div>
-    <button type="button" class="menu-fab ${navMenuOpen ? 'open' : ''}" data-action="toggle-menu" aria-expanded="${navMenuOpen}" aria-label="Mở menu công cụ">${navMenuOpen ? '✕' : '☰'}</button>
+    </nav>
   </div>`;
+}
+function setProfileMenuOpen(open) {
+  navMenuOpen = Boolean(open);
+  const trigger = $('profile-menu-trigger');
+  const panel = $('profile-menu-panel');
+  if (trigger) {
+    trigger.setAttribute('aria-expanded', String(navMenuOpen));
+    trigger.setAttribute('aria-label', navMenuOpen ? 'Đóng menu hồ sơ' : 'Mở menu hồ sơ');
+  }
+  if (panel) { panel.hidden = !navMenuOpen; panel.classList.toggle('open', navMenuOpen); }
 }
 
 function seedToolbarMarkup() {
@@ -486,7 +503,7 @@ function onAction(btn) {
   else if (action === 'open-shop') { shopTab = btn.dataset.shop; navigate('shop'); }
   else if (action === 'shop-tab') { shopTab = btn.dataset.shop; render(); }
   else if (action === 'select-seed') selectSeed(id);
-  else if (action === 'toggle-menu') { navMenuOpen = !navMenuOpen; render(); }
+  else if (action === 'toggle-profile-menu') setProfileMenuOpen(!navMenuOpen);
   else if (action === 'plot') {
     const plot = state.plots[idx];
     if (!plot) plant(idx, CROPS[state.selectedSeed] ? state.selectedSeed : 'carrot');
@@ -516,14 +533,17 @@ document.addEventListener('click', (event) => {
   const target = event.target.closest('[data-action]');
   // Chạm là hành động người chơi: mở quyền phát nhạc trên Safari iOS.
   window.MocMocAudio.unlock();
+  // Nhấn ra ngoài ảnh đại diện/menu thì tự đóng, không làm gián đoạn thao tác chơi.
+  if (navMenuOpen && !event.target.closest('.profile-area')) setProfileMenuOpen(false);
   if (target && !target.disabled) {
-    if (['auth-tab','close','tutorial','tutorial-next','tutorial-skip','nav','open-shop','shop-tab','toggle-menu','open-sound','sound-music','sound-effects','select-seed'].includes(target.dataset.action)) {
+    if (['auth-tab','close','tutorial','tutorial-next','tutorial-skip','nav','open-shop','shop-tab','toggle-profile-menu','open-sound','sound-music','sound-effects','select-seed'].includes(target.dataset.action)) {
       window.MocMocAudio.effect(target.dataset.action === 'select-seed' ? 'seed' : 'tap');
     }
     onAction(target);
   }
   else if (event.target === overlay && modal?.type !== 'tutorial') closeModal();
 });
+document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && navMenuOpen) { setProfileMenuOpen(false); $('profile-menu-trigger')?.focus(); } });
 document.addEventListener('submit', (event) => { if (event.target.id === 'auth-form') { window.MocMocAudio.unlock(); submitAuth(event); } });
 document.addEventListener('input', (event) => {
   if (event.target.matches('[data-action="sound-volume"]')) {
