@@ -689,3 +689,39 @@ body.mocmoc-playing #game-stage{overflow:hidden;}
  body.mocmoc-playing .game.pixel-game .seed-name{font-size:10px}
  body.mocmoc-playing .game.pixel-game .seed-count{font-size:9px}
 }
+
+
+/* character sprite upgrade */
+.sprite-avatar{display:inline-block;background-repeat:no-repeat;background-size:500% 400%;image-rendering:pixelated;image-rendering:crisp-edges;filter:drop-shadow(0 4px 0 rgba(100,78,52,.16));vertical-align:middle;background-position:0% 0%}
+.sprite-avatar.row-down{--row-y:0%}.sprite-avatar.row-left{--row-y:33.333%}.sprite-avatar.row-right{--row-y:66.666%}.sprite-avatar.row-up{--row-y:100%}
+.sprite-avatar.is-idle{background-position:0% var(--row-y)}
+.sprite-avatar.is-animated{animation:mocmocSpriteWalk .9s steps(4) infinite;background-position:25% var(--row-y)}
+.sprite-avatar.small{width:38px;height:48px;background-size:500% 400%;background-position:0% 0%;filter:none}
+.sprite-avatar.mini{width:84px;height:106px}
+.sprite-avatar.turn{width:78px;height:98px}
+.sprite-avatar.stage{width:176px;height:220px}
+@keyframes mocmocSpriteWalk{from{background-position:25% var(--row-y)}to{background-position:100% var(--row-y)}}
+.character-card-upgraded{padding:16px 16px 14px;background:linear-gradient(180deg,#e6f1db 0%,#f8efda 100%);border-color:#d8c9a5}
+.character-stage-wrap{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px}
+.character-copy-block{flex:1 1 220px;text-align:left}
+.character-copy-block h3{font-size:24px;margin-bottom:8px;color:#60452f}
+.character-helper{font-size:13px;line-height:1.5;color:#647566;margin:0 0 10px}
+.character-selected-tag{margin-top:12px;font-weight:800;color:#4f745d;background:#fff8e8;border:1px solid #e0d5b2;padding:8px 10px;border-radius:14px;display:inline-flex;gap:6px;align-items:center}
+.character-stage{height:auto;min-height:220px;display:grid;place-items:center;flex:0 0 auto;padding:10px 12px;border-radius:24px;background:radial-gradient(circle at 50% 25%,#fff8e8 0,#fff8e8 28%,#ecf3de 29%,#dae9ca 100%);border:2px solid #d8e6cf}
+.direction-gallery{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:14px}
+.direction-card{padding:10px 8px;border-radius:18px;background:#fffdf7;border:1px solid #eadfbe;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;font-weight:800;color:#5c6f5f}
+.direction-preview{height:98px;display:grid;place-items:center}
+.character-model-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:8px 0 16px}
+.character-model-card{padding:14px 10px;border-radius:20px;border:2px solid #e4ddc9;background:#fffdf8;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;box-shadow:0 4px 0 #ece4cf;color:#5a6c5f}
+.character-model-card.selected{border-color:#5f9f73;box-shadow:0 0 0 3px rgba(95,159,115,.18),0 4px 0 #d9e8dd;background:#f5fbf5}
+.character-model-preview{display:grid;place-items:center;height:106px}
+.character-model-name{font-size:14px;font-weight:900;color:#54402c}
+.character-model-desc{font-size:11px;line-height:1.4;color:#7b8377}
+.avatar-button .sprite-avatar.small{margin:0}
+@media (max-width:720px){
+  .sprite-avatar.stage{width:146px;height:182px}
+  .direction-gallery{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .character-model-grid{grid-template-columns:1fr}
+  .character-copy-block{text-align:center}
+  .character-stage-wrap{justify-content:center}
+}

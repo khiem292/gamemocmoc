@@ -34,6 +34,23 @@ const QUESTS = [
 const SKINS = ['#f0c3a0', '#dca178', '#bd7958', '#80533e'];
 const HAIRS = ['#49362b', '#8a5738', '#c18a4c', '#353f57'];
 const SHIRTS = ['#e78f73', '#6ab6b3', '#a48ad8', '#e6b559'];
+
+const CHARACTER_MODELS = {
+  boy: { name: 'Chàng nông dân', desc: 'Năng động · áo yếm xanh lá', sheet: 'assets/characters/farmer-boy.png' },
+  girl: { name: 'Cô nông dân', desc: 'Dễ thương · váy yếm xanh dương', sheet: 'assets/characters/farmer-girl.png' },
+  elder: { name: 'Bác nông dân', desc: 'Ấm áp · giàu kinh nghiệm', sheet: 'assets/characters/farmer-elder.png' }
+};
+function currentCharacterModel(avatar = state?.avatar) {
+  const key = avatar?.model || 'boy';
+  return CHARACTER_MODELS[key] ? key : 'boy';
+}
+function spriteAvatarMarkup(model = 'boy', size = 'stage', row = 'down', animated = true) {
+  const info = CHARACTER_MODELS[model] || CHARACTER_MODELS.boy;
+  return `<span class="sprite-avatar ${size} row-${row} ${animated ? 'is-animated' : 'is-idle'}" style="background-image:url('${info.sheet}')" aria-hidden="true"></span>`;
+}
+function avatarThumb(avatar = state?.avatar, size = 'small') {
+  return spriteAvatarMarkup(currentCharacterModel(avatar), size, 'down', size !== 'small');
+}
 const $ = (id) => document.getElementById(id);
 const app = $('app');
 const overlay = $('overlay');
@@ -90,7 +107,7 @@ function newState(name) {
     tools: { spray: 2, scarecrow: 1, net: 1, fertilizer: 2 },
     water: 10, lastWell: 0, selectedSeed: 'carrot',
     stats: { plant: 0, water: 0, harvest: 0, sell: 0, chase: 0 }, claimed: [],
-    avatar: { skin: 1, hair: 0, hairStyle: 'short', shirt: 0, hat: true },
+    avatar: { model: 'boy', skin: 1, hair: 0, hairStyle: 'short', shirt: 0, hat: true },
     tutorialDone: false, lastPestRoll: Date.now(), lastRainDay: ''
   };
 }
@@ -285,7 +302,7 @@ function profileMenuMarkup() {
     <button type="button" id="profile-menu-trigger" class="profile-trigger" data-action="toggle-profile-menu"
       aria-controls="profile-menu-panel" aria-haspopup="true" aria-expanded="${navMenuOpen}"
       aria-label="${navMenuOpen ? 'Đóng menu hồ sơ' : 'Mở menu hồ sơ'}" title="Mở menu từ ảnh đại diện">
-      <span class="avatar-button">${doll(state.avatar,'small')}</span><span class="profile-menu-chevron" aria-hidden="true">⌄</span>
+      <span class="avatar-button">${avatarThumb(state.avatar,'small')}</span><span class="profile-menu-chevron" aria-hidden="true">⌄</span>
     </button>
     <nav class="profile-menu-panel ${navMenuOpen ? 'open' : ''}" id="profile-menu-panel" aria-label="Điều hướng từ hồ sơ" ${navMenuOpen ? '' : 'hidden'}>
       <div class="profile-menu-title">🌿 Menu nông trại</div>
@@ -381,18 +398,49 @@ function inventoryMarkup() {
     <button class="btn btn-primary btn-block" data-action="nav" data-screen="shop">🛒 Ghé cửa hàng NPC</button></div>`;
 }
 function optionColors(key, colors, selected) { return colors.map((c,i) => `<button data-action="avatar" data-key="${key}" data-value="${i}" class="color-opt ${selected === i ? 'selected' : ''}" style="background:${c}" aria-label="Chọn màu ${i + 1}"></button>`).join(''); }
+
 function characterMarkup() {
   const a = state.avatar;
-  return `<div class="section-head"><div><h2>🧑‍🌾 Nhân vật của tôi</h2><p class="muted">Tự tạo phong cách riêng cho mình</p></div></div>
-    <div class="character-card"><h3>${esc(state.name)} · Cấp ${level()}</h3><div class="character-stage">${doll(a,'big')}</div><span class="pill">⭐ ${state.xp} XP · ${140-(state.xp%140)} XP để lên cấp</span></div>
-    <div class="page-pad"><h3 class="subhead">🎨 Màu da</h3><div class="option-row">${optionColors('skin',SKINS,a.skin)}</div>
-    <h3 class="subhead">💇 Kiểu tóc</h3><div class="option-row">${[['short','Tóc ngắn'],['long','Tóc dài'],['spiky','Tóc nhọn']].map(([v,n])=>`<button class="choice ${a.hairStyle === v ? 'selected' : ''}" data-action="avatar" data-key="hairStyle" data-value="${v}">${n}</button>`).join('')}</div>
-    <h3 class="subhead">🌰 Màu tóc</h3><div class="option-row">${optionColors('hair',HAIRS,a.hair)}</div>
-    <h3 class="subhead">👕 Màu áo</h3><div class="option-row">${optionColors('shirt',SHIRTS,a.shirt)}</div>
-    <h3 class="subhead">👒 Phụ kiện</h3><div class="option-row"><button class="choice ${a.hat ? 'selected' : ''}" data-action="avatar" data-key="hat" data-value="yes">Đội nón rơm 👒</button><button class="choice ${!a.hat ? 'selected' : ''}" data-action="avatar" data-key="hat" data-value="no">Không đội nón</button></div>
-    <button class="btn btn-primary btn-block" data-action="avatar-save">💾 Lưu diện mạo</button><div style="height:12px"></div><button class="btn btn-danger btn-block" data-action="logout">🚪 Đăng xuất</button>
-    <p class="footnote">Mã PIN và tiến trình chỉ lưu trên trình duyệt hiện tại. Xóa dữ liệu trình duyệt sẽ xóa nông trại. Đây là bản game thử nghiệm, chưa có máy chủ tài khoản.</p></div>`;
+  const current = currentCharacterModel(a);
+  const info = CHARACTER_MODELS[current];
+  const modelChoices = Object.entries(CHARACTER_MODELS).map(([id, cfg]) => `
+    <button class="character-model-card ${current === id ? 'selected' : ''}" data-action="avatar-model" data-model="${id}" aria-pressed="${current === id}">
+      <span class="character-model-preview">${spriteAvatarMarkup(id, 'mini', 'right', true)}</span>
+      <span class="character-model-name">${cfg.name}</span>
+      <span class="character-model-desc">${cfg.desc}</span>
+    </button>`).join('');
+  const directions = [
+    ['row-down', 'Mặt trước'],
+    ['row-left', 'Đi sang trái'],
+    ['row-right', 'Đi sang phải'],
+    ['row-up', 'Mặt sau']
+  ].map(([rowClass, label]) => `
+    <div class="direction-card">
+      <div class="direction-preview">${spriteAvatarMarkup(current, 'turn', rowClass.replace('row-',''), true)}</div>
+      <span>${label}</span>
+    </div>`).join('');
+  return `<div class="page-pad">
+    <div class="character-card character-card-upgraded">
+      <div class="character-stage-wrap">
+        <div class="character-copy-block">
+          <h3>${esc(state.name)} · Cấp ${level()}</h3>
+          <p class="character-helper">Chọn mẫu nhân vật mới và xem hoạt ảnh di chuyển trực tiếp ngay trong phần Nhân vật.</p>
+          <span class="pill">⭐ ${state.xp} XP · ${140-(state.xp%140)} XP để lên cấp</span>
+          <div class="character-selected-tag">Đang chọn: <strong>${info.name}</strong></div>
+        </div>
+        <div class="character-stage">${spriteAvatarMarkup(current, 'stage', 'down', true)}</div>
+      </div>
+      <div class="direction-gallery">${directions}</div>
+    </div>
+    <h3 class="subhead">🧑‍🌾 Mẫu nhân vật</h3>
+    <div class="character-model-grid">${modelChoices}</div>
+    <div class="notice">✨ Mẫu nhân vật và hoạt ảnh đi bộ đã được cập nhật. Nhấn vào một mẫu để đổi ngay nhân vật hiển thị trong game.</div>
+    <button class="btn btn-primary btn-block" data-action="avatar-save">💾 Lưu nhân vật đang chọn</button>
+    <div style="height:12px"></div>
+    <button class="btn btn-danger btn-block" data-action="logout">🚪 Đăng xuất</button>
+  </div>`;
 }
+
 function questsMarkup() {
   return `<div class="section-head"><div><h2>📜 Nhiệm vụ</h2><p class="muted">Làm việc nhỏ, nhận thưởng lớn!</p></div></div><div class="page-pad">
     ${QUESTS.map(q => { const n = Math.min(q.target,state.stats[q.id] || 0);const done=state.claimed.includes(q.id);return `<div class="quest"><span class="quest-icon">${q.emoji}</span><div class="quest-desc"><h3>${q.name}</h3><p>${q.desc} · ${n}/${q.target}</p><div class="progressbar"><span style="width:${Math.floor(n/q.target*100)}%"></span></div></div><button class="btn ${done ? 'btn-light' : 'btn-amber'}" data-action="quest-claim" data-id="${q.id}" ${done || n < q.target ? 'disabled' : ''}>${done ? '✓ Xong' : `+${q.coins} 🪙`}</button></div>`;}).join('')}
@@ -583,7 +631,8 @@ function onAction(btn) {
   else if (action === 'sell-all') sellProduce(id,true);
   else if (action === 'quest-claim') claimQuest(id);
   else if (action === 'avatar') customize(btn.dataset.key,btn.dataset.value);
-  else if (action === 'avatar-save') toast('💾 Diện mạo đã được lưu tự động!');
+  else if (action === 'avatar-model') { state.avatar.model = btn.dataset.model || 'boy'; save(); render(); window.MocMocAudio.effect('avatar'); }
+  else if (action === 'avatar-save') toast('💾 Nhân vật mới đã được lưu!');
   else if (action === 'logout') {
     const wasSocial = String(activeUser || '').startsWith('oauth:');
     closeModal(); setLocal(KEY_ACTIVE, ''); activeUser = null; state = null;
