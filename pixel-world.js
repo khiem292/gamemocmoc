@@ -159,7 +159,22 @@ function drawPlayer(g,tick){const a=state?.avatar||{};const x=state?.playerPos?.
   drawSprite(g,x,y, {skin:SKINS[a.skin]||'#e4b28b',shirt:SHIRTS[a.shirt]||'#e78f73',hair:HAIRS[a.hair]||'#49362b'},walking?Math.floor(tick*6)%2:0,a.hat!==false);
   rect(g,x-12,y+25,24,3,'#fff5c1');
 }
-function resize(){if(!canvas)return;const r=canvas.getBoundingClientRect();if(!r.width||!r.height)return;let cw=Math.max(200,Math.floor(r.width/2)),ch=Math.max(200,Math.floor(r.height/2));if(canvas.width!==cw||canvas.height!==ch){canvas.width=cw;canvas.height=ch;}cam.h=600;cam.w=600*r.width/r.height;}
+function isSimulatedLandscape(){
+  return document.body.classList.contains('mocmoc-playing') &&
+    window.matchMedia('(max-width:850px) and (orientation:portrait)').matches;
+}
+function resize(){
+  if(!canvas)return;
+  // getBoundingClientRect() trả về kích thước đã XOAY; canvas.clientWidth/Height
+  // giữ kích thước landscape LOGIC để hình không bị méo khi iPhone khóa xoay.
+  const r=canvas.getBoundingClientRect();
+  const width=isSimulatedLandscape()?canvas.clientWidth:r.width;
+  const height=isSimulatedLandscape()?canvas.clientHeight:r.height;
+  if(!width||!height)return;
+  const cw=Math.max(200,Math.floor(width/2)),ch=Math.max(200,Math.floor(height/2));
+  if(canvas.width!==cw||canvas.height!==ch){canvas.width=cw;canvas.height=ch;}
+  cam.h=600;cam.w=600*width/height;
+}
 function draw(time){raf=requestAnimationFrame(draw);if(!canvas||!canvas.isConnected||screen!=='farm'||!state||document.hidden){return}const dt=Math.min(.08,(time-lastFrame)/1000||0);lastFrame=time;elapsed+=dt;frame++;
   let vx=0,vy=0;const active=d=>keys.has(d)||touchDirs.has(d);
   if(active('left'))vx--;if(active('right'))vx++;if(active('up'))vy--;if(active('down'))vy++;
@@ -198,7 +213,23 @@ function handleObject(x,y){
   if(x>147&&x<415&&y>145&&y<427){toast('🏡 Đây là ngôi nhà của bạn. Sắp tới có thể trang trí bên trong!');return true}
   return false;
 }
-function canvasClick(e){if(!state||!canvas||modal)return;const r=canvas.getBoundingClientRect();const x=cam.x+(e.clientX-r.left)/r.width*cam.w,y=cam.y+(e.clientY-r.top)/r.height*cam.h;window.MocMocAudio?.unlock();if(!handleObject(x,y))destination={x:Math.max(36,Math.min(1160,x)),y:Math.max(130,Math.min(731,y))};}
+function canvasClick(e){
+  if(!state||!canvas||modal)return;
+  const r=canvas.getBoundingClientRect();
+  let ux,uy;
+  if(isSimulatedLandscape()){
+    // CSS rotate(90deg): trục x game trùng với trục y màn hình và
+    // trục y game đi ngược trục x màn hình. Dùng tọa độ đã đảo để chạm đúng cây.
+    ux=(e.clientY-r.top)/r.height;
+    uy=(r.right-e.clientX)/r.width;
+  }else{
+    ux=(e.clientX-r.left)/r.width;
+    uy=(e.clientY-r.top)/r.height;
+  }
+  const x=cam.x+ux*cam.w,y=cam.y+uy*cam.h;
+  window.MocMocAudio?.unlock();
+  if(!handleObject(x,y))destination={x:Math.max(36,Math.min(1160,x)),y:Math.max(130,Math.min(731,y))};
+}
 function nearby(){if(!state)return;const x=state.playerPos.x,y=state.playerPos.y;let chosen=null,distance=1e9;
   for(let i=0;i<12;i++){const xx=plotLeft+i%4*plotDX+plotW/2,yy=plotTop+Math.floor(i/4)*plotDY+plotH/2;let d=Math.hypot(x-xx,y-yy);if(d<distance){chosen={x:xx,y:yy};distance=d}}
   if(distance<110){handleObject(chosen.x,chosen.y);return}

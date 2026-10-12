@@ -114,6 +114,7 @@ function doll(avatar = state?.avatar, cl = '') {
   return `<span class="doll ${cl} ${a.hat ? '' : 'no-hat'}" style="--skin:${SKINS[a.skin] || SKINS[1]};--hair:${HAIRS[a.hair] || HAIRS[0]};--shirt:${SHIRTS[a.shirt] || SHIRTS[0]}"><span class="hair ${['short', 'long', 'spiky'].includes(a.hairStyle) ? a.hairStyle : 'short'}"></span><span class="head"><span class="eyes"><span>•</span><span>•</span></span></span><span class="body"></span><span class="legs"></span><span class="hat"></span></span>`;
 }
 function loginScreen() {
+  document.body.classList.remove('mocmoc-playing');
   app.innerHTML = `<main class="auth-screen pixel-auth-screen">
     <div class="auth-pixel-horizon" aria-hidden="true"><span class="auth-pixel-sun"></span><span class="auth-pixel-cloud cloud-one"></span><span class="auth-pixel-cloud cloud-two"></span><span class="auth-pixel-mountain mountain-one"></span><span class="auth-pixel-mountain mountain-two"></span><span class="auth-pixel-barn">🏡</span><span class="auth-pixel-tree tree-one">🌳</span><span class="auth-pixel-tree tree-two">🌲</span><span class="auth-pixel-crops">🌱 🌻 🌾 🌿 🌱 🌾</span></div>
     <section class="auth-card pixel-auth-card" aria-label="Đăng nhập Mộc Mộc Farm">
@@ -251,6 +252,7 @@ function processWorld() {
 }
 function render() {
   if (!state) { loginScreen(); return; }
+  document.body.classList.add('mocmoc-playing');
   const priorScroll = $('game-content')?.scrollTop || 0;
   const priorSeedScroll = $('seed-strip')?.scrollLeft || 0;
   const si = seasonInfo();
@@ -261,7 +263,7 @@ function render() {
     <div class="hud-middle"><span class="pill">🪙 <span id="money-value">${formatCoins(state.coins)}</span></span><span class="pill">💧 <span id="water-value">${state.water}</span>/20</span><span class="pill season-chip">${si.seasonIcon} ${si.seasonName}</span><span class="pill clock-chip">🕒 <span id="clock-compact">${String(si.hour).padStart(2,'0')}:${String(si.minute).padStart(2,'0')}</span><span class="clock-full" id="clock-label"> · ${timeLabel(si)}</span></span><button type="button" class="pill audio-hud-button" data-action="open-sound" title="Cài đặt âm thanh" aria-label="Cài đặt âm thanh">${audioPrefs.music ? '🎵' : '🔇'} Âm thanh</button></div></header>
     <main class="game-content ${screen === 'farm' ? 'farm-content' : ''}" id="game-content">${screen === 'farm' ? farmMarkup(si) : screen === 'shop' ? shopMarkup() : screen === 'inventory' ? inventoryMarkup() : screen === 'character' ? characterMarkup() : questsMarkup()}</main>
     ${screen === 'farm' ? seedToolbarMarkup() : ''}
-    <aside class="rotate-hint" aria-label="Hướng dẫn xoay điện thoại"><div class="rotate-panel"><div class="rotate-phone">📱<span>↻</span></div><h2>Hãy xoay ngang điện thoại</h2><p>Mộc Mộc Farm được thiết kế để chơi theo chiều ngang. Hãy tắt khóa xoay màn hình nếu cần.</p></div></aside>
+
     </div>`;
   const content = $('game-content');
   if (content) content.scrollTop = priorScroll;

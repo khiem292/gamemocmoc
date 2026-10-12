@@ -566,3 +566,99 @@ body:has(.auth-screen),body:has(.auth-screen) #app{height:auto;min-height:100%;o
   .rotate-panel p{font-size:13px;line-height:1.6;color:#e8d7b0}
 }
 @media (prefers-reduced-motion:reduce){.rotate-phone{transform:none}}
+
+
+/* ===============================================================
+   Chơi landscape ngay cả khi iPhone đang bật Khóa hướng dọc.
+   iOS không cho website xoay MÀN HÌNH HỆ THỐNG; ở chế độ đó ta xoay
+   nội dung game 90 độ. Người chơi vẫn CẦM ĐIỆN THOẠI NGANG.
+   Login/PIN giữ dọc để nhập bàn phím dễ dàng.
+   =============================================================== */
+#game-stage{position:relative;width:100%;height:100%;}
+body.mocmoc-playing #game-stage{overflow:hidden;}
+@media (max-width:850px) and (orientation:portrait) {
+  body.mocmoc-playing{width:100%;height:100dvh;min-height:0;overflow:hidden;overscroll-behavior:none}
+  body.mocmoc-playing #game-stage{
+    position:fixed;
+    z-index:0;
+    top:0;left:0;
+    width:100dvh;
+    height:100vw;
+    max-width:none;
+    max-height:none;
+    transform-origin:0 0;
+    transform:translateX(100vw) rotate(90deg);
+    background:#608e49;
+    overflow:hidden;
+  }
+  body.mocmoc-playing #app{
+    width:100%;height:100%;min-height:0;
+    overflow:hidden;
+    margin:0;max-width:none;
+  }
+  body.mocmoc-playing .game,
+  body.mocmoc-playing .game.pixel-game{
+    width:100%!important;
+    height:100%!important;
+    min-height:0!important;
+    max-height:100%!important;
+    padding:0!important;
+    overflow:hidden!important;
+  }
+  body.mocmoc-playing .rotate-hint{display:none!important}
+  body.mocmoc-playing .game.pixel-game .hud-middle{
+    top:7px;left:8px;right:69px;gap:4px!important;
+  }
+  body.mocmoc-playing .game.pixel-game .hud-middle .pill{
+    font-size:10px;padding:5px 7px!important;
+  }
+  body.mocmoc-playing .game.pixel-game .hud-middle .clock-full,
+  body.mocmoc-playing .game.pixel-game .hud-middle .season-chip{display:none!important}
+  body.mocmoc-playing .game.pixel-game .hud-top{top:6px;right:8px}
+  body.mocmoc-playing .game.pixel-game .profile-trigger{
+    width:37px;height:37px;min-width:37px;min-height:37px;
+  }
+  body.mocmoc-playing .game.pixel-game .avatar-button{width:35px;height:35px}
+  body.mocmoc-playing .game.pixel-game .pixel-help{
+    top:52px;right:8px;width:29px;height:29px;font-size:19px;
+  }
+  body.mocmoc-playing .game.pixel-game .pixel-pad{
+    left:10px;bottom:10px;
+    grid-template-columns:repeat(3,36px);
+    grid-template-rows:repeat(2,35px);
+    gap:2px;
+  }
+  body.mocmoc-playing .game.pixel-game .pixel-move{
+    width:36px;height:35px;padding:0;font-size:14px;
+    border-width:2px;border-bottom-width:3px;
+  }
+  body.mocmoc-playing .game.pixel-game .pixel-action{
+    right:11px;bottom:23px;padding:8px 10px;font-size:12px;
+  }
+  body.mocmoc-playing .game.pixel-game .pixel-action span{display:none}
+  body.mocmoc-playing .game.pixel-game .seed-dock{
+    max-width:calc(100dvh - 238px)!important;
+    bottom:6px!important;
+    padding:4px 6px 5px!important;
+  }
+  body.mocmoc-playing .game.pixel-game .seed-dock-head{
+    font-size:9px;padding:0 1px 3px!important;gap:5px;
+  }
+  body.mocmoc-playing .game.pixel-game .seed-instruction{display:none}
+  body.mocmoc-playing .game.pixel-game .seed-item{
+    flex-basis:50px;min-height:48px;padding:3px 1px;
+  }
+  body.mocmoc-playing .game.pixel-game .seed-emoji{font-size:18px}
+  body.mocmoc-playing .game.pixel-game .seed-name,
+  body.mocmoc-playing .game.pixel-game .seed-count{font-size:8px}
+  body.mocmoc-playing .game.pixel-game .seed-current{display:none}
+  body.mocmoc-playing .game:not(.pixel-game) .hud{padding:5px 12px 6px!important;flex-shrink:0}
+  body.mocmoc-playing .game:not(.pixel-game) .hud-brand{font-size:15px!important}
+  body.mocmoc-playing .game:not(.pixel-game) .hud-lvl{font-size:9px}
+  body.mocmoc-playing .game:not(.pixel-game) .hud-top .avatar-button{width:39px;height:39px}
+  body.mocmoc-playing .game:not(.pixel-game) .hud-middle{margin-top:5px}
+  body.mocmoc-playing .game:not(.pixel-game) .game-content{flex:1;min-height:0;overflow-y:auto}
+  /* Overlay và toast nằm trong #game-stage nên cùng xoay như bản đồ. */
+  body.mocmoc-playing #overlay{position:fixed;inset:0;z-index:30}
+  body.mocmoc-playing #toasts{width:min(75%,410px)}
+}
