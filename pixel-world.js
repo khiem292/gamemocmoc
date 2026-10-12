@@ -15,7 +15,14 @@ let lastSeason='',lastCanvasW=0,lastCanvasH=0;
 function rect(g,x,y,w,h,color){g.fillStyle=color;g.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h));}
 function rand(x,y){let v=Math.imul(x+139,y+433)^Math.imul(x+9,711);v^=v>>>11;v=Math.imul(v,1013904223);return ((v>>>0)%10000)/10000;}
 function polygon(g,points,color){g.fillStyle=color;g.beginPath();points.forEach(([x,y],i)=>i?g.lineTo(x,y):g.moveTo(x,y));g.closePath();g.fill();}
-function label(g,str,x,y,size=12,bg='#684328'){g.font=`900 ${size}px monospace`;g.textAlign='center';g.textBaseline='middle';const width=g.measureText(str).width+16;rect(g,x-width/2,y-11,width,22,bg);rect(g,x-width/2+3,y-8,width-6,16,'#f4dfb6');g.fillStyle='#614427';g.fillText(str,x,y+1);}
+function label(g,str,x,y,size=14,bg='#684328'){
+  g.save();g.font=`bold ${size}px monospace`;g.textAlign='center';g.textBaseline='middle';
+  const width=g.measureText(str).width+19;
+  rect(g,x-width/2,y-13,width,27,bg);
+  rect(g,x-width/2+3,y-10,width-6,20,'#fff0c8');
+  rect(g,x-width/2+6,y-7,width-12,2,'#fff9e6');
+  g.fillStyle='#49341f';g.fillText(str,x,y+1);g.restore();
+}
 function tuft(g,x,y){rect(g,x-6,y,4,8,'#356b31');rect(g,x+2,y-3,4,11,'#3e8233');rect(g,x-2,y-7,4,8,'#4d9138')}
 function flower(g,x,y,c){rect(g,x-1,y,3,8,'#478b39');rect(g,x-4,y-4,8,7,c);rect(g,x-1,y-2,3,3,'#f5db6c')}
 function pebble(g,x,y){rect(g,x,y,8,4,'#d6b37b');rect(g,x+3,y-3,6,3,'#f8d9a8')}
@@ -53,8 +60,8 @@ function farmhouse(g,x,y){
   rect(g,182,-12,35,52,'#9a5640');rect(g,187,-14,32,13,'#dd8b58');rect(g,182,9,32,6,'#764335');rect(g,189,22,7,7,'#e4a064');
   // cửa ra vào và cửa sổ
   rect(g,105,203,67,94,'#6e4933');rect(g,113,211,52,82,'#a8724a');rect(g,119,218,39,70,'#6f4833');rect(g,152,252,6,6,'#e9c975');rect(g,108,204,61,5,'#d2a674');
-  rect(g,39,156,68,65,'#5d4734');rect(g,45,161,57,55,'#d49b56');rect(g,50,166,47,44,'#82bdc8');rect(g,71,166,5,45,'#f7d79b');rect(g,50,185,47,5,'#f5d497');rect(g,43,159,62,5,'#f6ddab');
-  rect(g,199,173,44,50,'#4c382d');rect(g,203,177,36,40,'#8ec6c6');rect(g,218,177,4,40,'#f9d899');rect(g,203,195,36,4,'#e8c288');
+  rect(g,39,156,68,65,'#5d4734');rect(g,45,161,57,55,'#d49b56');rect(g,50,166,47,44,'#82bdc8');rect(g,71,166,5,45,'#fff0b2');rect(g,50,185,47,5,'#fff0b2');rect(g,54,170,15,3,'#b8e8dc');rect(g,80,192,13,3,'#b8e8dc');rect(g,43,159,62,5,'#f6ddab');
+  rect(g,199,173,44,50,'#4c382d');rect(g,203,177,36,40,'#8ec6c6');rect(g,218,177,4,40,'#fff0b2');rect(g,203,195,36,4,'#fff0b2');rect(g,206,181,9,3,'#c4e7de');
   for(let i=0;i<5;i++)rect(g,50+i*12,293,9,3,'#67452f');
   rect(g,98,298,84,7,'#b08c55');
   g.restore();
@@ -84,7 +91,7 @@ function pond(g,x,y){
 }
 function drawStatic(si){
   ground=document.createElement('canvas');ground.width=WORLD_W;ground.height=WORLD_H;
-  gctx=ground.getContext('2d');let g=gctx;
+  gctx=ground.getContext('2d');gctx.imageSmoothingEnabled=false;let g=gctx;
   let grass=si.season==='dong'?'#a7be87':si.season==='thu'?'#89b753':'#77b956';
   rect(g,0,0,WORLD_W,WORLD_H,grass);
   for(let y=0;y<WORLD_H;y+=16)for(let x=0;x<WORLD_W;x+=16){let r=rand(x,y);if(r>.61)rect(g,x+2,y+4,13,8,si.season==='dong'?'#c1c9a2':r>.84?'#91c761':'#6da64d');if(r<.12)rect(g,x+10,y+13,6,4,'#5e9e42')}
@@ -92,6 +99,15 @@ function drawStatic(si){
   polygon(g,[[0,0],[1200,0],[1200,36],[1090,63],[940,18],[804,89],[648,25],[534,89],[364,40],[164,73],[0,26]],'#72bdac');
   polygon(g,[[0,0],[600,0],[560,29],[340,12],[120,44],[0,20]],'#b9d4b4');
   pond(g,1010,218);path(g);
+  // Những cụm hoa/đá nhỏ tăng chiều sâu mà không che các ô đất có thể chạm.
+  for(let i=0;i<27;i++){
+    const x=42+rand(i,204)*1140,y=100+rand(i,305)*640;
+    if((x>125&&x<630&&y>120&&y<520)||(x>607&&x<1010&&y>319&&y<645))continue;
+    const tint=i%3===0?'#fff0b4':i%3===1?'#f2bac7':'#d5e9ff';
+    flower(g,x,y,tint);
+    rect(g,x+9,y+2,3,3,'#a6d66b');
+  }
+
   // Rào sau nhà và quanh khu nông nghiệp.
   fence(g,40,298,132);fence(g,386,304,37);fence(g,610,297,366);
   for(let x=650;x<943;x+=53){tuft(g,x,325);if(x%2)flower(g,x+13,340,'#f7edbe')}
@@ -113,8 +129,11 @@ function drawStatic(si){
 }
 function drawPlot(g,index){
   const row=Math.floor(index/4),col=index%4,x=plotLeft+col*plotDX,y=plotTop+row*plotDY;
-  rect(g,x-3,y+7,plotW+7,plotH+3,'#537a36');rect(g,x,y,plotW,plotH,C.soilD);
+  rect(g,x-4,y+6,plotW+8,plotH+5,'#345b2f');
+  rect(g,x-2,y,plotW+4,plotH+3,'#543824');
+  rect(g,x,y,plotW,plotH,C.soilD);
   rect(g,x+4,y+4,plotW-8,plotH-10,C.soil);
+  rect(g,x+5,y+4,plotW-10,3,'#bc8a5c');
   for(let k=0;k<3;k++)rect(g,x+7,y+14+k*18,plotW-14,5,'#a56b42');
   for(let k=0;k<6;k++)rect(g,x+4+rand(k,index+11)*56,y+11+rand(k+6,index)*50,5,3,k%2?'#c58a58':'#69402b');
   const p=state.plots[index];
@@ -133,7 +152,7 @@ function drawPlot(g,index){
   }
   if(p.fertilized){rect(g,x+4,y+4,10,10,'#f7d47c');rect(g,x+8,y+1,4,17,'#fff3a0')}
   if(p.pest){rect(g,x+54,y+4,14,14,'#e7b851');rect(g,x+58,y+9,7,5,'#824133')}
-  if(grown){rect(g,x+6,y+58,60,7,'#ebdc89');rect(g,x+6,y+58,60,4,'#fff6ae');rect(g,x+19,y+7,35,14,'#fceba8');g.font='bold 10px monospace';g.fillStyle='#6b4929';g.textAlign='center';g.fillText('CHÍN!',x+37,y+18)}
+  if(grown){rect(g,x+6,y+58,60,7,'#ebdc89');rect(g,x+6,y+58,60,4,'#fff6ae');rect(g,x+19,y+7,35,14,'#fceba8');g.font='bold 11px monospace';g.fillStyle='#593c1f';g.textAlign='center';g.fillText('CHÍN!',x+37,y+18)}
   else if(progress<1){rect(g,x+8,y+59,plotW-16,5,'#3c3b29');rect(g,x+8,y+59,(plotW-16)*progress,5,'#9ed66e')}
 }
 function drawSprite(g,x,y,colors={},walk=0,hat=true){
@@ -142,13 +161,13 @@ function drawSprite(g,x,y,colors={},walk=0,hat=true){
   rect(g,-13,19,27,7,'#39683c7a');
   rect(g,-10,7,7,15,'#4e6381');rect(g,3,7,7,15,'#4e6381');
   if(walk){rect(g,-11,16,8,8,'#554034');rect(g,4,12,8,8,'#554034')}else{rect(g,-11,19,8,5,'#554034');rect(g,3,19,8,5,'#554034')}
-  rect(g,-11,-11,22,22,shirt);rect(g,-15,-7,5,17,skin);rect(g,10,-7,5,17,skin);
-  rect(g,-11,-31,22,22,skin);rect(g,-13,-33,25,7,hair);rect(g,-13,-29,5,10,hair);rect(g,8,-29,4,9,hair);
-  rect(g,-6,-20,3,3,'#2d302b');rect(g,4,-20,3,3,'#2d302b');rect(g,-1,-12,7,2,'#ab634f');
+  rect(g,-11,-11,22,22,'#3f4437');rect(g,-9,-10,18,18,shirt);rect(g,-9,-10,3,16,'#ffffff27');rect(g,-10,8,21,3,'#664c3c');rect(g,-15,-7,5,17,skin);rect(g,10,-7,5,17,skin);
+  rect(g,-12,-32,24,24,'#5e3d2e');rect(g,-10,-30,20,20,skin);rect(g,-9,-28,3,15,'#ffffff27');rect(g,-13,-33,25,7,hair);rect(g,-13,-29,5,10,hair);rect(g,8,-29,4,9,hair);
+  rect(g,-6,-20,3,4,'#242c2b');rect(g,4,-20,3,4,'#242c2b');rect(g,-1,-12,5,2,'#a25346');
   if(hat){rect(g,-17,-36,35,7,'#e0bb6e');rect(g,-10,-43,22,9,'#eccb83');rect(g,-9,-37,20,4,'#986541')}
   g.restore();
 }
-function drawNPC(g,spot,tick){const clr=spot.id==='seed'?{skin:'#edc2a1',shirt:'#a770a6',hair:'#573f2c'}:spot.id==='sell'?{skin:'#d6a071',shirt:'#4483ab',hair:'#443528'}:{skin:'#dda47d',shirt:'#bb7751',hair:'#7a4935'};drawSprite(g,spot.x,spot.y+Math.sin(tick*2+spot.x)*1.3,clr,0,true);label(g,spot.label,spot.x,spot.y-51,11)}
+function drawNPC(g,spot,tick){const clr=spot.id==='seed'?{skin:'#edc2a1',shirt:'#a770a6',hair:'#573f2c'}:spot.id==='sell'?{skin:'#d6a071',shirt:'#4483ab',hair:'#443528'}:{skin:'#dda47d',shirt:'#bb7751',hair:'#7a4935'};drawSprite(g,spot.x,spot.y+Math.sin(tick*2+spot.x)*1.3,clr,0,true);label(g,spot.label,spot.x,spot.y-54,14)}
 function drawAnimals(g,tick){const dx=Math.sin(tick*.75)*29; // gà cạnh nhà
  rect(g,358+dx,464,24,18,'#f9f1d8');rect(g,371+dx,452,13,14,'#fff5d8');rect(g,385+dx,462,7,5,'#dfab4f');rect(g,375+dx,447,7,6,'#de5645');rect(g,375+dx,457,3,3,'#37332d');rect(g,367+dx,483,3,7,'#dba05c');rect(g,378+dx,483,3,7,'#dba05c');
  // thỏ cạnh bờ
@@ -165,16 +184,29 @@ function isSimulatedLandscape(){
 }
 function resize(){
   if(!canvas)return;
-  // getBoundingClientRect() trả về kích thước đã XOAY; canvas.clientWidth/Height
-  // giữ kích thước landscape LOGIC để hình không bị méo khi iPhone khóa xoay.
+  // Canvas cũ chỉ vẽ ở 1/2 độ phân giải CSS rồi phóng lớn nên đồ họa bị mờ.
+  // Giữ render pixel art nhưng vẽ trên số pixel thật của màn hình (Retina / HD).
+  // Với chế độ xoay giả trên iPhone, clientWidth/Height là kích thước LOGIC trước CSS rotate(90deg).
   const r=canvas.getBoundingClientRect();
   const width=isSimulatedLandscape()?canvas.clientWidth:r.width;
   const height=isSimulatedLandscape()?canvas.clientHeight:r.height;
   if(!width||!height)return;
-  const cw=Math.max(200,Math.floor(width/2)),ch=Math.max(200,Math.floor(height/2));
-  if(canvas.width!==cw||canvas.height!==ch){canvas.width=cw;canvas.height=ch;}
-  cam.h=600;cam.w=600*width/height;
+  const dpr=Math.min(2,Math.max(1,window.devicePixelRatio||1));
+  // Tránh tạo bitmap quá lớn trên iPhone cũ, giữ canvas dưới ~3.3M pixel.
+  const desiredScale=Math.min(dpr,Math.sqrt(3300000/(width*height)));
+  const cw=Math.max(200,Math.round(width*desiredScale));
+  const ch=Math.max(200,Math.round(height*desiredScale));
+  if(canvas.width!==cw||canvas.height!==ch){
+    canvas.width=cw;canvas.height=ch;
+    ctx=canvas.getContext('2d',{alpha:false});
+    ctx.imageSmoothingEnabled=false;
+  }
+  // Zoom nhẹ để nhân vật, ô đất và cây rõ hơn trên màn hình ngang.
+  // Camera vẫn chạy theo nhân vật; không thay đổi vị trí đối tượng hoặc hitbox.
+  cam.h=520;
+  cam.w=cam.h*width/height;
 }
+
 function draw(time){raf=requestAnimationFrame(draw);if(!canvas||!canvas.isConnected||screen!=='farm'||!state||document.hidden){return}const dt=Math.min(.08,(time-lastFrame)/1000||0);lastFrame=time;elapsed+=dt;frame++;
   let vx=0,vy=0;const active=d=>keys.has(d)||touchDirs.has(d);
   if(active('left'))vx--;if(active('right'))vx++;if(active('up'))vy--;if(active('down'))vy++;
@@ -192,6 +224,7 @@ function draw(time){raf=requestAnimationFrame(draw);if(!canvas||!canvas.isConnec
   cam.x=Math.max(0,Math.min(WORLD_W-viewWidth,state.playerPos.x-viewWidth*.5));
   if(viewWidth>=WORLD_W)cam.x=-(viewWidth-WORLD_W)/2;
   cam.y=Math.max(0,Math.min(WORLD_H-viewHeight,state.playerPos.y-viewHeight*.60));
+  cam.x=Math.round(cam.x);cam.y=Math.round(cam.y);
   ctx.imageSmoothingEnabled=false;rect(ctx,0,0,canvas.width,canvas.height,'#6a9d59');
   ctx.save();ctx.setTransform(canvas.width/viewWidth,0,0,canvas.height/viewHeight,-cam.x*canvas.width/viewWidth,-cam.y*canvas.height/viewHeight);
   if(ground)ctx.drawImage(ground,0,0);

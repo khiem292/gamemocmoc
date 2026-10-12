@@ -662,3 +662,30 @@ body.mocmoc-playing #game-stage{overflow:hidden;}
   body.mocmoc-playing #overlay{position:fixed;inset:0;z-index:30}
   body.mocmoc-playing #toasts{width:min(75%,410px)}
 }
+
+
+/* ===== SẮC NÉT / HD: giao diện giữ chất pixel art, không phóng mờ Canvas ===== */
+.game.pixel-game .pixel-canvas{
+  image-rendering:pixelated;
+  image-rendering:crisp-edges;
+  -webkit-font-smoothing:none;
+  filter:contrast(1.045) saturate(1.045);
+}
+.game.pixel-game .hud-middle .pill{
+  font-weight:900;
+  text-shadow:0 1px 0 #0006;
+  font-variant-numeric:tabular-nums;
+}
+.game.pixel-game .seed-item{touch-action:manipulation}
+.game.pixel-game .seed-name{font-weight:900}
+.game.pixel-game .seed-count{font-weight:800}
+.game.pixel-game .profile-menu-panel,.game.pixel-game .seed-dock{color:#ffedc0}
+@media (max-width:900px) and (orientation:landscape){
+ .game.pixel-game .seed-name{font-size:10px}
+ .game.pixel-game .seed-count{font-size:9px}
+ .game.pixel-game .hud-middle .pill{font-size:11px}
+}
+@media (max-width:850px) and (orientation:portrait){
+ body.mocmoc-playing .game.pixel-game .seed-name{font-size:10px}
+ body.mocmoc-playing .game.pixel-game .seed-count{font-size:9px}
+}

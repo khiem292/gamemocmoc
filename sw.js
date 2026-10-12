@@ -2,7 +2,7 @@
  * Ưu tiên tải file mới từ mạng, dùng cache chỉ khi mất kết nối.
  * Khi phát hành bản có thay đổi service worker, đổi CACHE để dọn cache cũ.
  */
-const CACHE = 'mocmoc-farm-v9-locked-landscape';
+const CACHE = 'mocmoc-farm-v10-pixel-hd';
 const CORE = [
   './', './index.html', './style.css', './audio.js', './game.js', './farm-theme.mp3',
   './pixel-world.js', './firebase-config.js', './social-auth.js', './manifest.webmanifest', './assets/icon-192.png', './assets/icon-512.png'
