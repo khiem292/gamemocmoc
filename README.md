@@ -2,6 +2,16 @@
 
 Một **game 2D/PWA** dùng HTML, CSS và JavaScript thuần. Có thể chơi trên máy tính lẫn Safari iPhone, không cần cài thư viện hay tài khoản dịch vụ ngoài.
 
+## 🔄 Cập nhật game trên iPhone nhưng GIỮ NGUYÊN LINK
+
+1. Chỉ tạo **một** repository GitHub (ví dụ `mocmoc-farm`) và bật GitHub Pages từ **nhánh `main`, thư mục `/(root)`**.
+2. Dùng **đúng một** đường link cố định, ví dụ `https://TEN-BAN.github.io/mocmoc-farm/`, thêm link đó lên Màn hình chính iPhone **một lần duy nhất** bằng Safari.
+3. Mỗi lần có phiên bản mới, vào **cùng repository** → **Add file → Upload files** → **tải đè vào gốc repository** các file `index.html`, `style.css`, `game.js`, `sw.js` (và file/thư mục khác nếu có thay đổi) → **Commit changes**. Không cần tạo repository mới, không đổi tên `index.html`, không cần thêm biểu tượng lên iPhone lần nữa.
+4. Sau khi GitHub Pages triển khai bản mới, iPhone có kết nối mạng sẽ dùng file mới khi **mở lại/tải lại game**. Service worker ưu tiên mạng và chỉ lấy cache để chơi offline. Safari đôi lúc cần đóng hẳn app rồi mở lại nếu đang giữ trang cũ.
+5. Nông trại tiếp tục nằm trong `localStorage` của **đúng tên miền cũ**. Không xóa dữ liệu website, không chuyển sang miền/repository khác nếu muốn giữ tiến trình.
+
+**Quan trọng:** File tải về có thể đổi tên mỗi phiên bản, nhưng **các file nằm bên trong ZIP phải luôn là `index.html`, `game.js`, `style.css`, `sw.js` ở cùng đường dẫn**, vì đó mới là đường link game bạn dùng. Mỗi commit GitHub Pages có thể cần một thời gian ngắn để triển khai.
+
 ## Tính năng có thể chơi
 
 - Đăng nhập / tạo tài khoản thử nghiệm bằng tên và PIN trên **thiết bị hiện tại**; hướng dẫn tân thủ 5 bước ngay sau khi tạo tài khoản.

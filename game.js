@@ -512,7 +512,30 @@ setInterval(() => {
     if (modal?.type === 'plot' && state.plots[modal.index]) drawModal();
   }
 }, 1000);
+// Kiểm tra bản mới mỗi lần mở game và khi quay lại iPhone, không đổi URL hay xóa nông trại.
+// Mã nguồn được lấy mới từ GitHub Pages khi có mạng; service worker chỉ dùng cache lúc offline.
 if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
-  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+  let refreshingForUpdate = false;
+  const alreadyControlled = !!navigator.serviceWorker.controller;
+  if (alreadyControlled) {
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (refreshingForUpdate) return;
+      refreshingForUpdate = true;
+      window.location.reload();
+    });
+  }
+  window.addEventListener('load', async () => {
+    try {
+      const registration = await navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' });
+      // check for an updated service worker even if Safari resumed an already-running PWA.
+      const check = () => {
+        if (navigator.onLine) registration.update().catch(() => {});
+      };
+      check();
+      window.addEventListener('pageshow', check);
+      document.addEventListener('visibilitychange', () => { if (!document.hidden) check(); });
+      window.addEventListener('online', check);
+    } catch (_) { /* Game vẫn hoạt động online nếu iOS không cho đăng ký. */ }
+  });
 }
 restore();
