@@ -148,11 +148,11 @@ async function submitAuth(event) {
     users.push(user);
     if (!setLocal(KEY_ACCOUNTS, JSON.stringify(users))) return;
     activeUser = user.id; state = newState(name); save();
-    setLocal(KEY_ACTIVE, user.id); screen = 'farm'; render(); openTutorial(0);
+    setLocal(KEY_ACTIVE, user.id); screen = 'farm'; window.MocMocAudio.effect('login'); render(); openTutorial(0);
   } else {
     if (!existing || existing.passHash !== fingerprint) { if (error) error.textContent = 'Tên hoặc mã PIN không đúng trên thiết bị này.'; return; }
     activeUser = existing.id; state = normalizeState(safeJSON(getLocal(STATE_PREFIX + activeUser), null), existing.name);
-    setLocal(KEY_ACTIVE, activeUser); screen = 'farm'; processWorld(); render();
+    setLocal(KEY_ACTIVE, activeUser); screen = 'farm'; processWorld(); window.MocMocAudio.effect('login'); render();
   }
 }
 function restore() {
@@ -213,10 +213,11 @@ function render() {
   const priorScroll = $('game-content')?.scrollTop || 0;
   const priorSeedScroll = $('seed-strip')?.scrollLeft || 0;
   const si = seasonInfo();
+  const audioPrefs = window.MocMocAudio.snapshot();
   app.innerHTML = `<div class="game">
     <header class="hud"><div class="hud-top"><div><h1 class="hud-brand">🌿 Mộc Mộc Farm</h1><div class="hud-lvl">NÔNG TRẠI BÌNH YÊN · CẤP ${level()}</div></div>
     <button data-action="nav" data-screen="character" class="hud-player" style="background:transparent;text-align:right"><span><div class="hud-player-title">${esc(state.name)}</div><div class="small muted">⭐ ${state.xp} XP</div></span><span class="avatar-button">${doll(state.avatar,'small')}</span></button></div>
-    <div class="hud-middle"><span class="pill">🪙 <span id="money-value">${formatCoins(state.coins)}</span></span><span class="pill">💧 <span id="water-value">${state.water}</span>/20</span><span class="pill">${si.seasonIcon} ${si.seasonName}</span><span class="pill clock-chip" id="clock-label">🗓️ ${timeLabel(si)}</span></div></header>
+    <div class="hud-middle"><span class="pill">🪙 <span id="money-value">${formatCoins(state.coins)}</span></span><span class="pill">💧 <span id="water-value">${state.water}</span>/20</span><span class="pill">${si.seasonIcon} ${si.seasonName}</span><span class="pill clock-chip" id="clock-label">🗓️ ${timeLabel(si)}</span><button type="button" class="pill audio-hud-button" data-action="open-sound" title="Cài đặt âm thanh" aria-label="Cài đặt âm thanh">${audioPrefs.music ? '🎵' : '🔇'} Âm thanh</button></div></header>
     <main class="game-content ${screen === 'farm' ? 'farm-content' : ''}" id="game-content">${screen === 'farm' ? farmMarkup(si) : screen === 'shop' ? shopMarkup() : screen === 'inventory' ? inventoryMarkup() : screen === 'character' ? characterMarkup() : questsMarkup()}</main>
     ${screen === 'farm' ? seedToolbarMarkup() : ''}
     ${menuDockMarkup()}</div>`;
@@ -237,6 +238,7 @@ function menuDockMarkup() {
   return `<div class="menu-dock ${screen === 'farm' ? 'with-seed-dock' : ''} ${navMenuOpen ? 'open' : ''}">
     <div class="menu-panel" aria-label="Điều hướng nhanh">
       ${items.map(([id, icon, label]) => `<button data-action="nav" data-screen="${id}" class="menu-item ${screen === id ? 'active' : ''}"><span class="menu-icon">${icon}</span><span>${label}</span></button>`).join('')}
+      <button type="button" data-action="open-sound" class="menu-item"><span class="menu-icon">🎵</span><span>Âm thanh</span></button>
     </div>
     <button type="button" class="menu-fab ${navMenuOpen ? 'open' : ''}" data-action="toggle-menu" aria-expanded="${navMenuOpen}" aria-label="Mở menu công cụ">${navMenuOpen ? '✕' : '☰'}</button>
   </div>`;
@@ -335,7 +337,20 @@ function drawModal() {
   if (!modal) { overlay.classList.add('hidden'); return; }
   overlay.classList.remove('hidden');
   let body = '';
-  if (modal.type === 'tutorial') {
+  if (modal.type === 'sound') {
+    const a = window.MocMocAudio.snapshot();
+    body = `<div class="modal-head"><h2>🎵 Âm thanh nông trại</h2><button class="close" data-action="close" aria-label="Đóng">×</button></div>
+      <p class="modal-copy">Giai điệu êm dịu và hiệu ứng nhẹ nhàng, giúp bạn chăm sóc khu vườn thư giãn hơn.</p>
+      <div class="sound-panel">
+        <button type="button" class="sound-toggle" data-action="sound-music" aria-pressed="${a.music}"><span class="sound-toggle-icon">🎶</span><span class="sound-toggle-text"><b>Nhạc nền</b><small>Giai điệu Mộc Mộc Farm · phát lặp lại</small></span><span class="sound-switch ${a.music ? 'on' : ''}">${a.music ? 'Bật' : 'Tắt'}</span></button>
+        <button type="button" class="sound-toggle" data-action="sound-effects" aria-pressed="${a.effects}"><span class="sound-toggle-icon">🔔</span><span class="sound-toggle-text"><b>Hiệu ứng</b><small>Gieo hạt, tưới cây, thu hoạch, mua bán</small></span><span class="sound-switch ${a.effects ? 'on' : ''}">${a.effects ? 'Bật' : 'Tắt'}</span></button>
+        <label class="sound-volume-label" for="music-volume">🔊 Âm lượng chung <b id="music-volume-label">${a.volume}%</b></label>
+        <input class="sound-volume" id="music-volume" type="range" min="0" max="100" step="5" value="${a.volume}" data-action="sound-volume" aria-label="Âm lượng từ 0 đến 100 phần trăm">
+        <div class="sound-volume-ends"><span>Nhỏ nhẹ</span><span>To hơn</span></div>
+        <button type="button" class="btn btn-light btn-block" data-action="sound-preview">🔔 Nghe thử hiệu ứng</button>
+      </div>
+      <p class="small muted" style="text-align:center;margin-top:12px">Trên iPhone, nhạc bắt đầu sau thao tác đầu tiên của bạn. Cài đặt được ghi nhớ cho lần chơi sau.</p>`;
+  } else if (modal.type === 'tutorial') {
     const slides = [
       ['🌈','Chào mừng tới Mộc Mộc Farm!','Xin chào người nông dân! Cùng xây dựng nông trại xanh bằng cách chăm sóc những luống cây đầu tiên.'],
       ['🌱','Bắt đầu trồng cây','Chọn loại hạt ở thanh ngay phía dưới màn hình, sau đó chạm trực tiếp vào ô đất trống để gieo. Bạn không cần mở bảng chọn hạt nữa!'],
@@ -374,7 +389,7 @@ function plant(index, id) {
   state.seeds[id]--;
   state.plots[index] = { crop: id, plantedAt: Date.now(), duration: durationFor(id), bonus: 0, hp: 100, fertilized: false, lastWater: 0, pest: null, lastDamage: 0 };
   state.stats.plant++;
-  save(); closeModal(); render(); toast(`🌱 Đã trồng ${CROPS[id].name}!`);
+  save(); closeModal(); render(); window.MocMocAudio.effect('plant'); toast(`🌱 Đã trồng ${CROPS[id].name}!`);
 }
 function waterPlant(index) {
   const p = state.plots[index];
@@ -383,7 +398,7 @@ function waterPlant(index) {
   if (Date.now() - (p.lastWater || 0) < 20000) { toast('⏳ Cây vừa được tưới. Hãy đợi khoảng 20 giây.'); return; }
   state.water--;
   p.bonus += 19; p.lastWater = Date.now(); p.hp = Math.min(100, p.hp + 10);
-  state.stats.water++; save(); render(); showPlot(index); toast('💧 Cây được tưới nước và lớn nhanh hơn!');
+  state.stats.water++; save(); render(); showPlot(index); window.MocMocAudio.effect('water'); toast('💧 Cây được tưới nước và lớn nhanh hơn!');
 }
 function fertilizePlant(index) {
   const p = state.plots[index];
@@ -391,7 +406,7 @@ function fertilizePlant(index) {
   if (p.fertilized) { toast('Cây này đã được bón phân.'); return; }
   if (state.tools.fertilizer <= 0) { toast('🧺 Hết phân bón! Mua thêm từ Bác Nâu.'); return; }
   state.tools.fertilizer--; p.fertilized = true; p.bonus += 27; p.hp = Math.min(100, p.hp+8);
-  save(); render(); showPlot(index); toast('🌿 Cây được bón phân, thu hoạch sẽ được x2!');
+  save(); render(); showPlot(index); window.MocMocAudio.effect('fertilizer'); toast('🌿 Cây được bón phân, thu hoạch sẽ được x2!');
 }
 function harvestPlant(index) {
   const p = state.plots[index];
@@ -399,7 +414,7 @@ function harvestPlant(index) {
   const c = CROPS[p.crop];
   const amount = p.fertilized ? 2 : 1;
   state.produce[p.crop] += amount; state.xp += c.xp; state.stats.harvest++;
-  state.plots[index] = null; save(); closeModal(); render(); toast(`🧺 Thu hoạch ${amount} ${c.name}! +${c.xp} XP`);
+  state.plots[index] = null; save(); closeModal(); render(); window.MocMocAudio.effect('harvest'); toast(`🧺 Thu hoạch ${amount} ${c.name}! +${c.xp} XP`);
 }
 function chasePest(index, free) {
   const p = state.plots[index];
@@ -412,7 +427,7 @@ function chasePest(index, free) {
     if (!(state.tools[pest.tool] > 0)) { toast(`Thiếu ${pest.toolName}. Hãy đến Bác Nâu!`); return; }
     state.tools[pest.tool]--; p.pest = null; state.stats.chase++; toast(`🛡️ Đã đuổi ${pest.name}!`);
   }
-  save(); render(); showPlot(index);
+  save(); render(); showPlot(index); window.MocMocAudio.effect('pest');
 }
 function buy(kind, id) {
   const item = kind === 'seed' ? CROPS[id] : TOOLS[id];
@@ -422,7 +437,7 @@ function buy(kind, id) {
   state.coins -= price;
   if (kind === 'seed') state.seeds[id] = (state.seeds[id] || 0) + 1;
   else state.tools[id] = (state.tools[id] || 0) + 1;
-  save(); render(); toast(`🛍️ Đã mua ${item.name} với ${price} xu!`);
+  save(); render(); window.MocMocAudio.effect('coins'); toast(`🛍️ Đã mua ${item.name} với ${price} xu!`);
 }
 function sellProduce(id, all) {
   const crop = CROPS[id]; if (!crop) return;
@@ -430,27 +445,27 @@ function sellProduce(id, all) {
   if (!owned) { toast('Bạn chưa có nông sản để bán.'); return; }
   const amount = all ? owned : 1;
   state.produce[id] -= amount; state.coins += crop.sell * amount; state.stats.sell += amount;
-  save(); render(); toast(`🪙 Chú Tư đã mua ${amount} ${crop.name}: +${formatCoins(crop.sell*amount)} xu!`);
+  save(); render(); window.MocMocAudio.effect('sell'); toast(`🪙 Chú Tư đã mua ${amount} ${crop.name}: +${formatCoins(crop.sell*amount)} xu!`);
 }
 function fetchWater() {
   const now=Date.now();
   if (now - (state.lastWell || 0) < 12000) { toast('⏳ Giếng đang hồi nước. Thử lại sau 12 giây!'); return; }
   if (state.water >= 20) { toast('💧 Bình nước đã đầy (20/20)!'); return; }
-  state.water = Math.min(20, state.water + 6); state.lastWell = now; save(); render(); toast('🪣 Lấy nước thành công! +6 💧');
+  state.water = Math.min(20, state.water + 6); state.lastWell = now; save(); render(); window.MocMocAudio.effect('water'); toast('🪣 Lấy nước thành công! +6 💧');
 }
 function claimQuest(id) {
   const q = QUESTS.find(v => v.id === id); if (!q || state.claimed.includes(id) || state.stats[id] < q.target) return;
-  state.claimed.push(id); state.coins += q.coins; save(); render(); toast(`🎉 Hoàn thành ${q.name}! +${q.coins} xu`);
+  state.claimed.push(id); state.coins += q.coins; save(); render(); window.MocMocAudio.effect('quest'); toast(`🎉 Hoàn thành ${q.name}! +${q.coins} xu`);
 }
 function customize(key, value) {
   if (!['skin','hair','shirt','hairStyle','hat'].includes(key)) return;
   if (key === 'hat') state.avatar.hat = value === 'yes';
   else if (key === 'hairStyle') { if (['short','long','spiky'].includes(value)) state.avatar.hairStyle = value; }
   else { const arr = key === 'skin' ? SKINS : key === 'hair' ? HAIRS : SHIRTS; const n = Number(value); if (Number.isInteger(n) && n >= 0 && n < arr.length) state.avatar[key] = n; }
-  save(); render();
+  save(); render(); window.MocMocAudio.effect('avatar');
 }
 function finishTutorial() {
-  if (!state.tutorialDone) { state.tutorialDone = true; state.coins += 50; save(); toast('🎁 Hoàn thành hướng dẫn! Tặng bạn 50 xu.'); }
+  if (!state.tutorialDone) { state.tutorialDone = true; state.coins += 50; save(); window.MocMocAudio.effect('quest'); toast('🎁 Hoàn thành hướng dẫn! Tặng bạn 50 xu.'); }
   closeModal(); render();
 }
 function onAction(btn) {
@@ -460,6 +475,10 @@ function onAction(btn) {
   if (action === 'auth-tab') { accountMode = btn.dataset.mode === 'login' ? 'login' : 'register'; loginScreen(); }
   else if (!state) return;
   else if (action === 'close') closeModal();
+  else if (action === 'open-sound') { navMenuOpen = false; modal = { type:'sound' }; render(); }
+  else if (action === 'sound-music') { const audio = window.MocMocAudio; audio.setMusic(!audio.snapshot().music); render(); }
+  else if (action === 'sound-effects') { const audio = window.MocMocAudio; audio.setEffects(!audio.snapshot().effects); render(); }
+  else if (action === 'sound-preview') window.MocMocAudio.effect('harvest');
   else if (action === 'tutorial') openTutorial(0);
   else if (action === 'tutorial-next') { if (tutorialStep < 4) openTutorial(tutorialStep + 1); else finishTutorial(); }
   else if (action === 'tutorial-skip') { state.tutorialDone = true; save(); closeModal(); }
@@ -478,7 +497,7 @@ function onAction(btn) {
   else if (action === 'water') waterPlant(idx);
   else if (action === 'fertilize') fertilizePlant(idx);
   else if (action === 'harvest') harvestPlant(idx);
-  else if (action === 'clear') { if (state.plots[idx]?.hp <= 0) { state.plots[idx] = null; save(); closeModal(); render(); toast('🧹 Đã dọn sạch ô đất.'); } }
+  else if (action === 'clear') { if (state.plots[idx]?.hp <= 0) { state.plots[idx] = null; save(); closeModal(); render(); window.MocMocAudio.effect('plant'); toast('🧹 Đã dọn sạch ô đất.'); } }
   else if (action === 'defend') chasePest(idx,false);
   else if (action === 'shoo') chasePest(idx,true);
   else if (action === 'well') fetchWater();
@@ -490,12 +509,30 @@ function onAction(btn) {
   else if (action === 'avatar-save') toast('💾 Diện mạo đã được lưu tự động!');
   else if (action === 'logout') { closeModal(); setLocal(KEY_ACTIVE, ''); activeUser = null; state = null; accountMode = 'login'; loginScreen(); toast('Bạn đã đăng xuất. Nông trại vẫn được lưu trên thiết bị.'); }
 }
+// Một số trình duyệt yêu cầu gesture trực tiếp để phát âm thanh lần đầu.
+document.addEventListener('pointerdown', () => window.MocMocAudio.unlock(), { passive: true });
+document.addEventListener('keydown', (event) => { if (event.key === 'Enter' || event.key === ' ') window.MocMocAudio.unlock(); });
 document.addEventListener('click', (event) => {
   const target = event.target.closest('[data-action]');
-  if (target && !target.disabled) onAction(target);
+  // Chạm là hành động người chơi: mở quyền phát nhạc trên Safari iOS.
+  window.MocMocAudio.unlock();
+  if (target && !target.disabled) {
+    if (['auth-tab','close','tutorial','tutorial-next','tutorial-skip','nav','open-shop','shop-tab','toggle-menu','open-sound','sound-music','sound-effects','select-seed'].includes(target.dataset.action)) {
+      window.MocMocAudio.effect(target.dataset.action === 'select-seed' ? 'seed' : 'tap');
+    }
+    onAction(target);
+  }
   else if (event.target === overlay && modal?.type !== 'tutorial') closeModal();
 });
-document.addEventListener('submit', (event) => { if (event.target.id === 'auth-form') submitAuth(event); });
+document.addEventListener('submit', (event) => { if (event.target.id === 'auth-form') { window.MocMocAudio.unlock(); submitAuth(event); } });
+document.addEventListener('input', (event) => {
+  if (event.target.matches('[data-action="sound-volume"]')) {
+    window.MocMocAudio.setVolume(event.target.value);
+    const label = $('music-volume-label');
+    if (label) label.textContent = `${window.MocMocAudio.snapshot().volume}%`;
+  }
+});
+
 document.addEventListener('visibilitychange', () => { if (!document.hidden && state) { processWorld(); render(); } });
 setInterval(() => {
   if (!state || document.hidden) return;
@@ -512,12 +549,10 @@ setInterval(() => {
     if (modal?.type === 'plot' && state.plots[modal.index]) drawModal();
   }
 }, 1000);
-// Kiểm tra bản mới mỗi lần mở game và khi quay lại iPhone, không đổi URL hay xóa nông trại.
-// Mã nguồn được lấy mới từ GitHub Pages khi có mạng; service worker chỉ dùng cache lúc offline.
+// Kiểm tra phiên bản mới trên cùng địa chỉ GitHub Pages và giữ tiến trình trong localStorage.
 if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
   let refreshingForUpdate = false;
-  const alreadyControlled = !!navigator.serviceWorker.controller;
-  if (alreadyControlled) {
+  if (navigator.serviceWorker.controller) {
     navigator.serviceWorker.addEventListener('controllerchange', () => {
       if (refreshingForUpdate) return;
       refreshingForUpdate = true;
@@ -527,15 +562,12 @@ if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.
   window.addEventListener('load', async () => {
     try {
       const registration = await navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' });
-      // check for an updated service worker even if Safari resumed an already-running PWA.
-      const check = () => {
-        if (navigator.onLine) registration.update().catch(() => {});
-      };
+      const check = () => { if (navigator.onLine) registration.update().catch(() => {}); };
       check();
       window.addEventListener('pageshow', check);
       document.addEventListener('visibilitychange', () => { if (!document.hidden) check(); });
       window.addEventListener('online', check);
-    } catch (_) { /* Game vẫn hoạt động online nếu iOS không cho đăng ký. */ }
+    } catch (_) { /* Vẫn chơi online được nếu trình duyệt không hỗ trợ worker. */ }
   });
 }
 restore();

@@ -2,21 +2,11 @@
 
 Một **game 2D/PWA** dùng HTML, CSS và JavaScript thuần. Có thể chơi trên máy tính lẫn Safari iPhone, không cần cài thư viện hay tài khoản dịch vụ ngoài.
 
-## 🔄 Cập nhật game trên iPhone nhưng GIỮ NGUYÊN LINK
-
-1. Chỉ tạo **một** repository GitHub (ví dụ `mocmoc-farm`) và bật GitHub Pages từ **nhánh `main`, thư mục `/(root)`**.
-2. Dùng **đúng một** đường link cố định, ví dụ `https://TEN-BAN.github.io/mocmoc-farm/`, thêm link đó lên Màn hình chính iPhone **một lần duy nhất** bằng Safari.
-3. Mỗi lần có phiên bản mới, vào **cùng repository** → **Add file → Upload files** → **tải đè vào gốc repository** các file `index.html`, `style.css`, `game.js`, `sw.js` (và file/thư mục khác nếu có thay đổi) → **Commit changes**. Không cần tạo repository mới, không đổi tên `index.html`, không cần thêm biểu tượng lên iPhone lần nữa.
-4. Sau khi GitHub Pages triển khai bản mới, iPhone có kết nối mạng sẽ dùng file mới khi **mở lại/tải lại game**. Service worker ưu tiên mạng và chỉ lấy cache để chơi offline. Safari đôi lúc cần đóng hẳn app rồi mở lại nếu đang giữ trang cũ.
-5. Nông trại tiếp tục nằm trong `localStorage` của **đúng tên miền cũ**. Không xóa dữ liệu website, không chuyển sang miền/repository khác nếu muốn giữ tiến trình.
-
-**Quan trọng:** File tải về có thể đổi tên mỗi phiên bản, nhưng **các file nằm bên trong ZIP phải luôn là `index.html`, `game.js`, `style.css`, `sw.js` ở cùng đường dẫn**, vì đó mới là đường link game bạn dùng. Mỗi commit GitHub Pages có thể cần một thời gian ngắn để triển khai.
-
 ## Tính năng có thể chơi
 
 - Đăng nhập / tạo tài khoản thử nghiệm bằng tên và PIN trên **thiết bị hiện tại**; hướng dẫn tân thủ 5 bước ngay sau khi tạo tài khoản.
 - Tạo nhân vật theo màu da, tóc, kiểu tóc, quần áo và nón.
-- 12 ô đất, 5 loại cây: cà rốt, cà chua, bắp ngô, dâu tây, bí ngô. **Thanh hạt giống nằm ngay phía trên thanh điều hướng**; chọn hạt rồi chạm ô đất trống để gieo ngay, không có cửa sổ chọn hạt.
+- 12 ô đất, 5 loại cây: cà rốt, cà chua, bắp ngô, dâu tây, bí ngô. **Thanh hạt giống cố định ở sát dưới màn hình, có menu ☰ gọn**; chọn hạt rồi chạm ô đất trống để gieo ngay, không có cửa sổ chọn hạt.
 - Cây mọc theo thời gian thực: khi đóng Safari và mở lại, thời gian đã qua vẫn được tính.
 - Tưới nước (giúp cây lớn nhanh), lấy nước từ giếng; phân hữu cơ tăng tốc và tăng đôi nông sản.
 - Mô phỏng xuân/hạ/thu/đông theo ngày tháng năm thực tế của Việt Nam, ngày/đêm theo giờ hiện tại, nắng/mây/gió/mưa mô phỏng theo ngày. Thời tiết này **không phải dữ liệu khí tượng thật**.
@@ -29,7 +19,7 @@ Một **game 2D/PWA** dùng HTML, CSS và JavaScript thuần. Có thể chơi tr
 
 1. Trong **Vườn**, chọn hạt trên **thanh hạt giống cố định phía dưới** (vuốt ngang để xem đủ các loại).
 2. Chạm vào **ô đất trống**: hạt đang chọn được gieo ngay, số hạt trong túi giảm 1. Không phải mở cửa sổ chọn hạt.
-3. Chạm vào **ô đã trồng** để mở thao tác tưới, bón phân, xua thú, thu hoạch.
+3. Chạm vào **cây đang lớn** để tưới, bón phân hoặc xua thú; chạm vào **cây đã chín** để thu hoạch ngay trong một lần chạm.
 4. Nếu hết hạt, nhấn **🛒 Mua hạt** bên phải thanh hoặc gặp NPC **Cô Mây**.
 
 Khi tải bản mới lên GitHub Pages, nhớ tải đè cả `game.js`, `style.css` và `sw.js` để nhận thay đổi. Nếu iPhone còn hiển thị bản cũ, hãy đóng và mở lại web app hoặc tải lại Safari khi có mạng.
@@ -78,6 +68,8 @@ mocmoc-farm-ios/
 ├── index.html              # Khung trang web
 ├── style.css               # Giao diện responsive + thế giới nông trại
 ├── game.js                 # Tính năng / dữ liệu / nhiệm vụ
+├── audio.js                # Nhạc nền và tiếng hiệu ứng
+├── farm-theme.mp3          # Bản nhạc nền không lời gốc
 ├── manifest.webmanifest    # Cài đặt PWA
 ├── sw.js                   # Hoạt động ngoại tuyến
 ├── assets/

@@ -122,3 +122,22 @@ body{background:linear-gradient(180deg,#dceccb 0%,#c9e0ba 100%)}
   .menu-dock{right:12px;bottom:112px}
   .menu-dock.with-seed-dock{bottom:118px}
 }
+
+
+/* Sound settings button and soft controls */
+.audio-hud-button{border:1px solid #cfe6ce!important;cursor:pointer;font-size:11px;font-weight:900;color:#367b56;background:#eaf4dd;white-space:nowrap;min-height:32px;display:inline-flex;align-items:center;justify-content:center;padding:7px 11px}
+.audio-hud-button:active,.sound-toggle:active{transform:scale(.98)}
+.hud-middle{flex-wrap:wrap}
+.sound-panel{background:#f6f6e9;border:2px solid #e4ead9;border-radius:20px;padding:12px;display:flex;flex-direction:column;gap:11px}
+.sound-toggle{display:flex;gap:12px;align-items:center;width:100%;padding:12px 10px;background:#fffef7;border:1px solid #e4ead7;border-radius:15px;text-align:left;color:#335e49}
+.sound-toggle-icon{font-size:30px;line-height:1;min-width:34px;text-align:center}
+.sound-toggle-text{display:flex;flex-direction:column;gap:3px;flex:1;min-width:0}
+.sound-toggle-text b{font-weight:900;font-size:15px}
+.sound-toggle-text small{font-size:11px;color:#77947c;line-height:1.4}
+.sound-switch{border-radius:40px;padding:7px 10px;background:#e6e6dc;color:#7b8976;font-size:12px;font-weight:900;min-width:47px;text-align:center}
+.sound-switch.on{background:#cceac7;color:#327850}
+.sound-volume-label{display:flex;justify-content:space-between;color:#49745a;font-weight:900;font-size:13px;padding:5px 3px 0}
+.sound-volume-label b{color:#2e8758}
+.sound-volume{width:100%;height:24px;accent-color:#509a6b;cursor:pointer;touch-action:pan-x}
+.sound-volume-ends{display:flex;justify-content:space-between;color:#8a9d86;font-size:11px;margin-top:-9px}
+@media(max-width:480px){.audio-hud-button{font-size:10px;min-height:29px}}

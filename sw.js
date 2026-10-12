@@ -2,9 +2,9 @@
  * Ưu tiên tải file mới từ mạng, dùng cache chỉ khi mất kết nối.
  * Khi phát hành bản có thay đổi service worker, đổi CACHE để dọn cache cũ.
  */
-const CACHE = 'mocmoc-farm-v3-online-first';
+const CACHE = 'mocmoc-farm-v4-music';
 const CORE = [
-  './', './index.html', './style.css', './game.js',
+  './', './index.html', './style.css', './audio.js', './game.js', './farm-theme.mp3',
   './manifest.webmanifest', './assets/icon-192.png', './assets/icon-512.png'
 ];
 const SCOPE = new URL(self.registration.scope);
