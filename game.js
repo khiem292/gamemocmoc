@@ -378,7 +378,7 @@ function farmMarkup(si) {
     </section>`;
 }
 function shopMarkup() {
-  const people = { seed: ['👩‍🌾', 'Cô Mây', 'Chuyên bán hạt giống tốt nhất làng'], sell: ['👨‍🌾', 'Chú Tư', 'Thu mua nông sản với giá rõ ràng'], tool: ['👨‍🔧', 'Bác Nâu', 'Dụng cụ bảo vệ & phân bón'] };
+  const people = { seed: ['girl', 'Cô Mây', 'Chuyên bán hạt giống tốt nhất làng'], sell: ['boy', 'Chú Tư', 'Thu mua nông sản với giá rõ ràng'], tool: ['elder', 'Bác Nâu', 'Dụng cụ bảo vệ & phân bón'] };
   const p = people[shopTab];
   let cards = '';
   if (shopTab === 'seed') cards = Object.entries(CROPS).map(([id, c]) => `<article class="item-card"><div class="item-pic">${c.emoji}</div><h3 class="item-title">${c.name}</h3><p class="item-desc">${c.desc}<br>⏳ ~${Math.ceil(c.seconds / 60)} phút</p><div class="item-price">🪙 ${c.seed} / hạt</div><button class="btn btn-primary" data-action="buy" data-kind="seed" data-id="${id}">＋ Mua hạt</button></article>`).join('');
@@ -386,7 +386,7 @@ function shopMarkup() {
   else cards = Object.entries(CROPS).map(([id, c]) => `<article class="item-card"><div class="item-pic">${c.emoji}</div><h3 class="item-title">${c.name}</h3><p class="item-desc">Đang có: ${state.produce[id] || 0} nông sản<br>Chú Tư mua mỗi sản phẩm</p><div class="item-price">🪙 +${c.sell} / quả</div><button class="btn btn-amber" data-action="sell" data-id="${id}" ${!(state.produce[id] > 0) ? 'disabled' : ''}>Bán 1</button><button style="margin-top:6px;background:#ecf2db;color:#47735b" class="btn" data-action="sell-all" data-id="${id}" ${!(state.produce[id] > 0) ? 'disabled' : ''}>Bán hết</button></article>`).join('');
   return `<div class="section-head"><div><h2>🛍️ Khu chợ nhỏ</h2><p class="muted">Gặp gỡ các NPC tại nông trại</p></div><span class="pill">🪙 ${formatCoins(state.coins)}</span></div>
     <div class="tabs"><button class="${shopTab === 'seed' ? 'active' : ''}" data-action="shop-tab" data-shop="seed">🌱 Hạt giống</button><button class="${shopTab === 'sell' ? 'active' : ''}" data-action="shop-tab" data-shop="sell">🧺 Bán nông sản</button><button class="${shopTab === 'tool' ? 'active' : ''}" data-action="shop-tab" data-shop="tool">🛠️ Công cụ</button></div>
-    <div class="npc-banner"><span class="emoji">${p[0]}</span><div><h3>${p[1]}</h3><p>${p[2]}</p></div></div><div class="page-pad"><div class="shop-grid">${cards}</div></div>`;
+    <div class="npc-banner"><span class="emoji npc-banner-sprite">${spriteAvatarMarkup(p[0], 'shop', 'down', false)}</span><div><h3>${p[1]}</h3><p>${p[2]}</p></div></div><div class="page-pad"><div class="shop-grid">${cards}</div></div>`;
 }
 function inventoryMarkup() {
   const hasProduce = Object.values(state.produce).some(x => x > 0);
@@ -405,7 +405,7 @@ function characterMarkup() {
   const info = CHARACTER_MODELS[current];
   const modelChoices = Object.entries(CHARACTER_MODELS).map(([id, cfg]) => `
     <button class="character-model-card ${current === id ? 'selected' : ''}" data-action="avatar-model" data-model="${id}" aria-pressed="${current === id}">
-      <span class="character-model-preview">${spriteAvatarMarkup(id, 'mini', 'right', true)}</span>
+      <span class="character-model-preview">${spriteAvatarMarkup(id, 'mini', 'right', false)}</span>
       <span class="character-model-name">${cfg.name}</span>
       <span class="character-model-desc">${cfg.desc}</span>
     </button>`).join('');
@@ -416,7 +416,7 @@ function characterMarkup() {
     ['row-up', 'Mặt sau']
   ].map(([rowClass, label]) => `
     <div class="direction-card">
-      <div class="direction-preview">${spriteAvatarMarkup(current, 'turn', rowClass.replace('row-',''), true)}</div>
+      <div class="direction-preview">${spriteAvatarMarkup(current, 'turn', rowClass.replace('row-',''), false)}</div>
       <span>${label}</span>
     </div>`).join('');
   return `<div class="page-pad">
@@ -424,17 +424,17 @@ function characterMarkup() {
       <div class="character-stage-wrap">
         <div class="character-copy-block">
           <h3>${esc(state.name)} · Cấp ${level()}</h3>
-          <p class="character-helper">Chọn mẫu nhân vật mới và xem hoạt ảnh di chuyển trực tiếp ngay trong phần Nhân vật.</p>
+          <p class="character-helper">Chọn mẫu nhân vật mới để áp dụng cho tài khoản và các phần hiển thị trong game. Các hiệu ứng động trong mục Nhân vật đã được tắt để giao diện gọn hơn.</p>
           <span class="pill">⭐ ${state.xp} XP · ${140-(state.xp%140)} XP để lên cấp</span>
           <div class="character-selected-tag">Đang chọn: <strong>${info.name}</strong></div>
         </div>
-        <div class="character-stage">${spriteAvatarMarkup(current, 'stage', 'down', true)}</div>
+        <div class="character-stage">${spriteAvatarMarkup(current, 'stage', 'down', false)}</div>
       </div>
       <div class="direction-gallery">${directions}</div>
     </div>
     <h3 class="subhead">🧑‍🌾 Mẫu nhân vật</h3>
     <div class="character-model-grid">${modelChoices}</div>
-    <div class="notice">✨ Mẫu nhân vật và hoạt ảnh đi bộ đã được cập nhật. Nhấn vào một mẫu để đổi ngay nhân vật hiển thị trong game.</div>
+    <div class="notice">✨ Mẫu nhân vật đã được cập nhật. Nhấn vào một mẫu để đổi ngay nhân vật hiển thị trong game.</div>
     <button class="btn btn-primary btn-block" data-action="avatar-save">💾 Lưu nhân vật đang chọn</button>
     <div style="height:12px"></div>
     <button class="btn btn-danger btn-block" data-action="logout">🚪 Đăng xuất</button>

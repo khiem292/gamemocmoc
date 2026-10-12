@@ -725,3 +725,8 @@ body.mocmoc-playing #game-stage{overflow:hidden;}
   .character-copy-block{text-align:center}
   .character-stage-wrap{justify-content:center}
 }
+
+
+/* NPC sprite update */
+.sprite-avatar.shop{width:58px;height:72px;filter:none}
+.npc-banner-sprite{display:grid;place-items:center;width:68px;height:78px}

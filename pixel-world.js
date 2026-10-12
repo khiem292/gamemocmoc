@@ -12,6 +12,16 @@ let canvas=null,ctx=null,ground=null,gctx=null,raf=0,lastFrame=0;
 let cam={x:0,y:0,w:760,h:560};
 let keys=new Set(),touchDirs=new Set(),destination=null,elapsed=0,frame=0,lastSaved=0;
 let lastSeason='',lastCanvasW=0,lastCanvasH=0;
+
+const npcSpriteMeta={
+  seed:{src:'assets/characters/farmer-girl.png', row:0, frame:0, w:48, h:56},
+  sell:{src:'assets/characters/farmer-boy.png', row:0, frame:0, w:48, h:56},
+  tool:{src:'assets/characters/farmer-elder.png', row:0, frame:0, w:48, h:56}
+};
+const npcSpriteImages={};
+Object.entries(npcSpriteMeta).forEach(([id,cfg])=>{
+  const img=new Image(); img.src=cfg.src; npcSpriteImages[id]=img;
+});
 function rect(g,x,y,w,h,color){g.fillStyle=color;g.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h));}
 function rand(x,y){let v=Math.imul(x+139,y+433)^Math.imul(x+9,711);v^=v>>>11;v=Math.imul(v,1013904223);return ((v>>>0)%10000)/10000;}
 function polygon(g,points,color){g.fillStyle=color;g.beginPath();points.forEach(([x,y],i)=>i?g.lineTo(x,y):g.moveTo(x,y));g.closePath();g.fill();}
@@ -155,6 +165,16 @@ function drawPlot(g,index){
   if(grown){rect(g,x+6,y+58,60,7,'#ebdc89');rect(g,x+6,y+58,60,4,'#fff6ae');rect(g,x+19,y+7,35,14,'#fceba8');g.font='bold 11px monospace';g.fillStyle='#593c1f';g.textAlign='center';g.fillText('CHÍN!',x+37,y+18)}
   else if(progress<1){rect(g,x+8,y+59,plotW-16,5,'#3c3b29');rect(g,x+8,y+59,(plotW-16)*progress,5,'#9ed66e')}
 }
+
+function drawSheetSprite(g,img,x,y,row=0,frame=0,w=48,h=56){
+  if(!img||!img.complete||!img.naturalWidth) return false;
+  const cols=5, rows=4;
+  const sw=img.naturalWidth/cols, sh=img.naturalHeight/rows;
+  g.imageSmoothingEnabled=false;
+  g.drawImage(img, Math.floor(frame)*sw, Math.floor(row)*sh, sw, sh, Math.round(x-w/2), Math.round(y-h+8), w, h);
+  return true;
+}
+
 function drawSprite(g,x,y,colors={},walk=0,hat=true){
   const skin=colors.skin||'#e6aa7b',shirt=colors.shirt||'#df7457',hair=colors.hair||'#654430';
   g.save();g.translate(Math.round(x),Math.round(y));
@@ -167,7 +187,21 @@ function drawSprite(g,x,y,colors={},walk=0,hat=true){
   if(hat){rect(g,-17,-36,35,7,'#e0bb6e');rect(g,-10,-43,22,9,'#eccb83');rect(g,-9,-37,20,4,'#986541')}
   g.restore();
 }
-function drawNPC(g,spot,tick){const clr=spot.id==='seed'?{skin:'#edc2a1',shirt:'#a770a6',hair:'#573f2c'}:spot.id==='sell'?{skin:'#d6a071',shirt:'#4483ab',hair:'#443528'}:{skin:'#dda47d',shirt:'#bb7751',hair:'#7a4935'};drawSprite(g,spot.x,spot.y+Math.sin(tick*2+spot.x)*1.3,clr,0,true);label(g,spot.label,spot.x,spot.y-54,14)}
+
+function drawNPC(g,spot,tick){
+  const meta=npcSpriteMeta[spot.id];
+  const img=npcSpriteImages[spot.id];
+  const bob=Math.sin(tick*2+spot.x)*1.1;
+  const shadowW=meta?.w?Math.max(20,meta.w-16):22;
+  rect(g,spot.x-shadowW/2,spot.y+9,shadowW,6,'#39683c63');
+  let drawn=false;
+  if(meta) drawn=drawSheetSprite(g,img,spot.x,spot.y+bob,meta.row,meta.frame,meta.w,meta.h);
+  if(!drawn){
+    const clr=spot.id==='seed'?{skin:'#edc2a1',shirt:'#a770a6',hair:'#573f2c'}:spot.id==='sell'?{skin:'#d6a071',shirt:'#4483ab',hair:'#443528'}:{skin:'#dda47d',shirt:'#bb7751',hair:'#7a4935'};
+    drawSprite(g,spot.x,spot.y+bob,clr,0,true);
+  }
+  label(g,spot.label,spot.x,spot.y-54,14)
+}
 function drawAnimals(g,tick){const dx=Math.sin(tick*.75)*29; // gà cạnh nhà
  rect(g,358+dx,464,24,18,'#f9f1d8');rect(g,371+dx,452,13,14,'#fff5d8');rect(g,385+dx,462,7,5,'#dfab4f');rect(g,375+dx,447,7,6,'#de5645');rect(g,375+dx,457,3,3,'#37332d');rect(g,367+dx,483,3,7,'#dba05c');rect(g,378+dx,483,3,7,'#dba05c');
  // thỏ cạnh bờ
